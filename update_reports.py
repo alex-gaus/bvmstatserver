@@ -7,5 +7,5 @@ def update():
     # reportsdb.delete()
     reports = get_reports()
     for report in reports:
-        reportsdb.upser(report,["report_link"])
+        reportsdb.upsert(report,["report_link"])
     return True
