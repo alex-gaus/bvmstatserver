@@ -16,20 +16,33 @@ app = Flask(__name__)
 def hello_world():
     return 'Hello, World!'
 
-@app.route('/count_orgas.csv')
-def count_orgas():
+# orgas:
+# Shows which organization documented how many reports
+@app.route('/orgas')
+def orgas():
     update()
     conn = sqlite3.connect("reports.db")
     df = pd.read_sql_query("SELECT incident_author, COUNT(date) FROM reports GROUP BY incident_author", conn)
     print(df)
     csv_data = df.to_csv()
     output = make_response(csv_data)
-    output.headers["Content-Disposition"] = "attachment; filename=export.csv"
+    output.headers["Content-Disposition"] = "attachment; filename=orgas.csv"
     output.headers["Content-type"] = "text/csv"
     return(output)
 
-    # df = pd.read_sql_query("select * from yyyy_mm_overview;", conn)
-    # df.to_csv("yyyy_mm_overview.csv", index=True, sep=",")
+# reports
+# Shows how many reports were reported by month (+ the group size)
+@app.route('/reports')
+def reports():
+    update()
+    conn = sqlite3.connect("reports.db")
+    df = pd.read_sql_query("SELECT SUBSTR(date,011) as date, count(date) as counter, sum(group_size) as size FROM reports GROUP BY date", conn)
+    print(df)
+    csv_data = df.to_csv()
+    output = make_response(csv_data)
+    output.headers["Content-Disposition"] = "attachment; filename=reports.csv"
+    output.headers["Content-type"] = "text/csv"
+    return(output)
 
 
 
