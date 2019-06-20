@@ -42,6 +42,41 @@ def reports():
     output.headers["Content-type"] = "text/csv"
     return(output)
 
+# reports
+# Shows how many pushbacks involed minors
+@app.route('/underage')
+def underage():
+    update()
+    conn = sqlite3.connect("reports.db")
+    df = pd.read_sql_query("""
+        SELECT 
+        SUBSTR(reports.date,0,8) as date_report,
+        reports.underage_involved as underage_involved,
+        count(age) as counter,
+        CASE underage_involved
+            WHEN "yes" THEN count(age)
+            WHEN "no" THEN  0
+            WHEN "unknown" THEN 0
+        END as yes,
+        CASE underage_involved
+            WHEN "yes" THEN 0
+            WHEN "no" THEN  count(age)
+            WHEN "unknown" THEN 0
+        END as no,
+        CASE underage_involved
+            WHEN "yes" THEN 0
+            WHEN "no" THEN  0
+            WHEN "unknown" THEN count(age)
+        END as unknown
+        from reports
+        Group by reports.underage_involved, date_report
+    """, conn)
+    csv_data = df.to_csv()
+    output = make_response(csv_data)
+    output.headers["Content-Disposition"] = "attachment; filename=underage.csv"
+    output.headers["Content-type"] = "text/csv"
+    return(output)
+
 
 
 if __name__ == '__main__':
