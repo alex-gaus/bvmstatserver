@@ -50,7 +50,7 @@ def underage():
     conn = sqlite3.connect("reports.db")
     df = pd.read_sql_query("""
         SELECT 
-        SUBSTR(reports.date,0,8) as date_report,
+        SUBSTR(reports.date,0,5) as date_report,
         reports.underage_involved as underage_involved,
         count(age) as counter,
         CASE underage_involved
