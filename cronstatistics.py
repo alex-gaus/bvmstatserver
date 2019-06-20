@@ -35,7 +35,7 @@ def orgas():
 def reports():
     update()
     conn = sqlite3.connect("reports.db")
-    df = pd.read_sql_query("SELECT DISTINCT report_link SUBSTR(date,0,8) as date_report, count(date) as counter, sum(group_size) as group_size FROM reports GROUP BY date_report", conn)
+    df = pd.read_sql_query("SELECT SUBSTR(date,0,8) as date_yyyy_mm, count(date) as counter, sum(group_size) as size FROM reports GROUP BY date_yyyy_mm", conn)
     csv_data = df.to_csv()
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=reports.csv"
