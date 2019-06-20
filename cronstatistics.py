@@ -22,7 +22,7 @@ def hello_world():
 def orgas():
     update()
     conn = sqlite3.connect("reports.db")
-    df = pd.read_sql_query("SELECT incident_author, COUNT(date) FROM reports GROUP BY incident_author", conn)
+    df = pd.read_sql_query("SELECT DISTINCT report_link incident_author, COUNT(date) FROM reports GROUP BY incident_author", conn)
     csv_data = df.to_csv()
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=orgas.csv"
@@ -35,7 +35,7 @@ def orgas():
 def reports():
     update()
     conn = sqlite3.connect("reports.db")
-    df = pd.read_sql_query("SELECT SUBSTR(date,0,8) as date_report, count(date) as counter, sum(group_size) as group_size FROM reports GROUP BY date_report", conn)
+    df = pd.read_sql_query("SELECT DISTINCT report_link SUBSTR(date,0,8) as date_report, count(date) as counter, sum(group_size) as group_size FROM reports GROUP BY date_report", conn)
     csv_data = df.to_csv()
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=reports.csv"
@@ -50,6 +50,7 @@ def underage():
     conn = sqlite3.connect("reports.db")
     df = pd.read_sql_query("""
         SELECT 
+        DISTINCT
         SUBSTR(reports.date,0,5) as date_report,
         reports.underage_involved as underage_involved,
         count(age) as counter,
