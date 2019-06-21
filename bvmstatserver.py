@@ -5,6 +5,7 @@ from flask import make_response
 from update_reports import update
 import pandas as pd
 import sqlite3
+import os
 
 
 # To get server  running:
@@ -20,34 +21,36 @@ def hello_world():
 # Shows which organization documented how many reports
 @app.route('/orgas')
 def orgas():
-    update()
-    conn = sqlite3.connect("reports.db")
+    filename=update()
+    conn = sqlite3.connect("%s.db"%(filename))
     df = pd.read_sql_query("SELECT incident_author, COUNT(date) FROM reports GROUP BY incident_author", conn)
     csv_data = df.to_csv()
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=orgas.csv"
     output.headers["Content-type"] = "text/csv"
+    os.remove("%s.db"%(filename))
     return(output)
 
 # reports
 # Shows how many reports were reported by month (+ the group size)
 @app.route('/reports')
 def reports():
-    update()
-    conn = sqlite3.connect("reports.db")
+    filename=update()
+    conn = sqlite3.connect("%s.db"%(filename))
     df = pd.read_sql_query("SELECT SUBSTR(date,0,8) as date_yyyy_mm, count(date) as counter, sum(group_size) as size FROM reports GROUP BY date_yyyy_mm", conn)
     csv_data = df.to_csv()
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=reports.csv"
     output.headers["Content-type"] = "text/csv"
+    os.remove("%s.db"%(filename))
     return(output)
 
 # reports
 # Shows how many pushbacks involed minors
 @app.route('/underage')
 def underage():
-    update()
-    conn = sqlite3.connect("reports.db")
+    filename=update()
+    conn = sqlite3.connect("%s.db"%(filename))
     df = pd.read_sql_query("""
         SELECT 
         DISTINCT
@@ -76,6 +79,7 @@ def underage():
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=underage.csv"
     output.headers["Content-type"] = "text/csv"
+    os.remove("%s.db"%(filename))
     return(output)
 
 
