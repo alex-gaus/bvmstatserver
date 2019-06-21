@@ -5,6 +5,7 @@ from flask import make_response
 from update_reports import update
 import pandas as pd
 import sqlite3
+import csv
 import os
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -99,7 +100,7 @@ def underage():
         # from reports
         # Group by reports.underage_involved, date_report
     
-    csv_data = df.to_csv(quoting=True)
+    csv_data = df.to_csv(quoting=csv.QUOTE_NONNUMERIC)
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=underage.csv"
     output.headers["Content-type"] = "text/csv"
