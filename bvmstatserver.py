@@ -62,20 +62,52 @@ def underage():
     conn = sqlite3.connect("%s.db"%(filename))
     df = pd.read_sql_query("""
         SELECT 
-        SUBSTR(reports.date,0,5) as date_report,
-        reports.underage_involved as underage_involved,
-        count(age) as counter,
+        a.underage_involved,
+        b.year_2017,c.year_2018, a.year_2019
+        FROM 
+        (SELECT 
+        reports.underage_involved,
         CASE SUBSTR(reports.date,0,5)
-        WHEN "2017" THEN count(age)
+            WHEN "2017" THEN count(age)
         END as year_2017,
         CASE SUBSTR(reports.date,0,5)
-        WHEN "2018" THEN  count(age)
+            WHEN "2018" THEN  count(age)
         END as year_2018,
         CASE SUBSTR(reports.date,0,5)
-        WHEN "2019" THEN count(age)
+            WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by date_report,reports.underage_involved
+        Group by underage_involved, SUBSTR(reports.date,0,5)) as a,
+
+        (SELECT 
+        reports.underage_involved,
+        CASE SUBSTR(reports.date,0,5)
+            WHEN "2017" THEN count(age)
+        END as year_2017,
+        CASE SUBSTR(reports.date,0,5)
+            WHEN "2018" THEN  count(age)
+        END as year_2018,
+        CASE SUBSTR(reports.date,0,5)
+            WHEN "2019" THEN count(age)
+        END as year_2019
+        from reports
+        Group by underage_involved, SUBSTR(reports.date,0,5)) as b,
+        (SELECT 
+        reports.underage_involved,
+        CASE SUBSTR(reports.date,0,5)
+            WHEN "2017" THEN count(age)
+        END as year_2017,
+        CASE SUBSTR(reports.date,0,5)
+            WHEN "2018" THEN  count(age)
+        END as year_2018,
+        CASE SUBSTR(reports.date,0,5)
+            WHEN "2019" THEN count(age)
+        END as year_2019
+        from reports
+        Group by underage_involved, SUBSTR(reports.date,0,5)) as c
+        WHERE 
+        a.underage_involved =b.underage_involved and a.underage_involved = c.underage_involved
+        Group by a.underage_involved
     """, conn)
         # SELECT 
         # DISTINCT
