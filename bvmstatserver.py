@@ -262,7 +262,7 @@ def asylum():
    """,conn)
     csv_data = df.to_csv(quoting=csv.QUOTE_NONNUMERIC)
     output = make_response(csv_data)
-    output.headers["Content-Disposition"] = "attachment; filename=asylun.csv"
+    output.headers["Content-Disposition"] = "attachment; filename=asylum.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
     os.remove("%s.db"%(filename))
