@@ -35,5 +35,6 @@ def get_reports():
 
     response = requests.get('https://www.borderviolence.eu/wp-admin/admin-ajax.php', headers=headers, params=params, cookies=cookies)
     reports = response.json()
+    logging.info("Length: "+str(len(reports)))
     logging.info("first row: "+str(reports[0]))
     return reports

@@ -15,6 +15,8 @@ logging.basicConfig(level=logging.INFO)
 # $flask run
 
 app = Flask(__name__)
+app.config['debug'] = False
+
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
