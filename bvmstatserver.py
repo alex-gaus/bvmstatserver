@@ -54,7 +54,7 @@ def reports():
     logging.info(output)
     return(output)
 
-# reports
+# underage
 # Shows how many pushbacks involed minors
 @app.route('/underage')
 def underage():
@@ -140,6 +140,71 @@ def underage():
     os.remove("%s.db"%(filename))
     return(output)
 
+# women
+# Shows how many pushbacks involed women
+@app.route('/women')
+def women():
+    filename=update()
+    conn = sqlite3.connect("%s.db"%(filename))
+    df = pd.read_sql_query("""
+        SELECT 
+        CASE a.women_involved
+        WHEN "yes" THEN "yes"
+        WHEN "no" THEN "no"
+        ELSE "unknown"
+        END as women_involved_c,
+        b.year_2017,c.year_2018, a.year_2019
+        FROM 
+        (SELECT 
+        reports.women_involved,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2017" THEN count(age)
+        END as year_2017,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2018" THEN  count(age)
+        END as year_2018,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2019" THEN count(age)
+        END as year_2019
+        from reports
+        Group by women_involved, SUBSTR(reports.date,0,5)) as a,
+        (SELECT 
+        reports.women_involved,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2017" THEN count(age)
+        END as year_2017,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2018" THEN  count(age)
+        END as year_2018,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2019" THEN count(age)
+        END as year_2019
+        from reports
+        Group by women_involved, SUBSTR(reports.date,0,5)) as b,
+        (SELECT 
+        reports.women_involved,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2017" THEN count(age)
+        END as year_2017,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2018" THEN  count(age)
+        END as year_2018,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2019" THEN count(age)
+        END as year_2019
+        from reports
+        Group by women_involved, SUBSTR(reports.date,0,5)) as c
+        WHERE 
+        a.women_involved =b.women_involved and a.women_involved = c.women_involved
+        Group by women_involved_c
+   """)
+    csv_data = df.to_csv(quoting=csv.QUOTE_NONNUMERIC)
+    output = make_response(csv_data)
+    output.headers["Content-Disposition"] = "attachment; filename=underage.csv"
+    output.headers["Content-type"] = "text/csv"
+    conn.close()
+    os.remove("%s.db"%(filename))
+    return(output)
 
 
 if __name__ == '__main__':
