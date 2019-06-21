@@ -230,7 +230,6 @@ def asylum():
         END as year_2019
         from reports
         Group by intention_asylum_expressed, SUBSTR(reports.date,0,5)) as a,
-
         (SELECT 
         reports.intention_asylum_expressed,
         CASE SUBSTR(reports.date,0,5)
