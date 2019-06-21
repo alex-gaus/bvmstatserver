@@ -206,6 +206,68 @@ def women():
     os.remove("%s.db"%(filename))
     return(output)
 
+# asylum
+# Shows for how many pushbacks the request to ask for asylum was denied
+@app.route('/asylum')
+def asylum():
+    filename=update()
+    conn = sqlite3.connect("%s.db"%(filename))
+    df = pd.read_sql_query("""
+        SELECT 
+        a.intention_asylum_expressed,
+        b.year_2017,c.year_2018, a.year_2019
+        FROM 
+        (SELECT 
+        reports.intention_asylum_expressed,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2017" THEN count(age)
+        END as year_2017,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2018" THEN  count(age)
+        END as year_2018,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2019" THEN count(age)
+        END as year_2019
+        from reports
+        Group by intention_asylum_expressed, SUBSTR(reports.date,0,5)) as a,
+
+        (SELECT 
+        reports.intention_asylum_expressed,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2017" THEN count(age)
+        END as year_2017,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2018" THEN  count(age)
+        END as year_2018,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2019" THEN count(age)
+        END as year_2019
+        from reports
+        Group by intention_asylum_expressed, SUBSTR(reports.date,0,5)) as b,
+        (SELECT 
+        reports.intention_asylum_expressed,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2017" THEN count(age)
+        END as year_2017,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2018" THEN  count(age)
+        END as year_2018,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2019" THEN count(age)
+        END as year_2019
+        from reports
+        Group by intention_asylum_expressed, SUBSTR(reports.date,0,5)) as c
+        WHERE 
+        a.intention_asylum_expressed =b.intention_asylum_expressed and a.intention_asylum_expressed = c.intention_asylum_expressed
+        Group by a.intention_asylum_expressed
+   """,conn)
+    csv_data = df.to_csv(quoting=csv.QUOTE_NONNUMERIC)
+    output = make_response(csv_data)
+    output.headers["Content-Disposition"] = "attachment; filename=asylun.csv"
+    output.headers["Content-type"] = "text/csv"
+    conn.close()
+    os.remove("%s.db"%(filename))
+    return(output)
 
 if __name__ == '__main__':
     hello_world()
