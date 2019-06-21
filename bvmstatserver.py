@@ -99,7 +99,7 @@ def underage():
         # from reports
         # Group by reports.underage_involved, date_report
     
-    csv_data = df.to_csv()
+    csv_data = df.to_csv(quoting=True)
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=underage.csv"
     output.headers["Content-type"] = "text/csv"
