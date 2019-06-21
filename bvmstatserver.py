@@ -22,7 +22,7 @@ def hello_world():
 def orgas():
     update()
     conn = sqlite3.connect("reports.db")
-    df = pd.read_sql_query("SELECT DISTINCT report_link incident_author, COUNT(date) FROM reports GROUP BY incident_author", conn)
+    df = pd.read_sql_query("SELECT incident_author, COUNT(date) FROM reports GROUP BY incident_author", conn)
     csv_data = df.to_csv()
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=orgas.csv"
