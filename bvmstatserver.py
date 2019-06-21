@@ -197,10 +197,10 @@ def women():
         WHERE 
         a.women_involved =b.women_involved and a.women_involved = c.women_involved
         Group by women_involved_c
-   """)
+   """,conn)
     csv_data = df.to_csv(quoting=csv.QUOTE_NONNUMERIC)
     output = make_response(csv_data)
-    output.headers["Content-Disposition"] = "attachment; filename=underage.csv"
+    output.headers["Content-Disposition"] = "attachment; filename=women.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
     os.remove("%s.db"%(filename))
