@@ -14,5 +14,4 @@ def update():
     reports = get_reports()
     for report in reports:
         reportsdb.upsert(report,["report_link"])
-    d
     return filename
