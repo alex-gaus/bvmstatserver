@@ -6,6 +6,8 @@ from update_reports import update
 import pandas as pd
 import sqlite3
 import os
+import logging
+logging.basicConfig(level=logging.INFO)
 
 
 # To get server  running:
@@ -39,10 +41,12 @@ def reports():
     conn = sqlite3.connect("%s.db"%(filename))
     df = pd.read_sql_query("SELECT SUBSTR(date,0,8) as date_yyyy_mm, count(date) as counter, sum(group_size) as size FROM reports GROUP BY date_yyyy_mm", conn)
     csv_data = df.to_csv()
+    logging.info(csv_data)
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=reports.csv"
     output.headers["Content-type"] = "text/csv"
     os.remove("%s.db"%(filename))
+    logging.info(output)
     return(output)
 
 # reports

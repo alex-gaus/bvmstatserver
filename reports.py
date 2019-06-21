@@ -4,8 +4,8 @@ import json
 import requests
 from operator import itemgetter  
 from credentials import botid
-import logging
 import pandas
+import logging
 logging.basicConfig(level=logging.INFO)
 
 def get_reports():
@@ -34,5 +34,6 @@ def get_reports():
     )
 
     response = requests.get('https://www.borderviolence.eu/wp-admin/admin-ajax.php', headers=headers, params=params, cookies=cookies)
-    json = response.json()
-    return json
+    reports = response.json()
+    logging.info("first row: "+str(reports[0]))
+    return reports
