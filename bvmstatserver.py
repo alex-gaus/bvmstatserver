@@ -32,6 +32,7 @@ def orgas():
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=orgas.csv"
     output.headers["Content-type"] = "text/csv"
+    conn.close()
     os.remove("%s.db"%(filename))
     return(output)
 
@@ -47,6 +48,7 @@ def reports():
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=reports.csv"
     output.headers["Content-type"] = "text/csv"
+    conn.close()
     os.remove("%s.db"%(filename))
     logging.info(output)
     return(output)
@@ -59,32 +61,49 @@ def underage():
     conn = sqlite3.connect("%s.db"%(filename))
     df = pd.read_sql_query("""
         SELECT 
-        DISTINCT
         SUBSTR(reports.date,0,5) as date_report,
         reports.underage_involved as underage_involved,
         count(age) as counter,
-        CASE underage_involved
-            WHEN "yes" THEN count(age)
-            WHEN "no" THEN  0
-            WHEN "unknown" THEN 0
-        END as yes,
-        CASE underage_involved
-            WHEN "yes" THEN 0
-            WHEN "no" THEN  count(age)
-            WHEN "unknown" THEN 0
-        END as no,
-        CASE underage_involved
-            WHEN "yes" THEN 0
-            WHEN "no" THEN  0
-            WHEN "unknown" THEN count(age)
-        END as unknown
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2017" THEN count(age)
+        END as year_2017,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2018" THEN  count(age)
+        END as year_2018,
+        CASE SUBSTR(reports.date,0,5)
+        WHEN "2019" THEN count(age)
+        END as year_2019
         from reports
-        Group by reports.underage_involved, date_report
+        Group by date_report,reports.underage_involved
     """, conn)
+        # SELECT 
+        # DISTINCT
+        # SUBSTR(reports.date,0,5) as date_report,
+        # reports.underage_involved as underage_involved,
+        # count(age) as counter,
+        # CASE underage_involved
+        #     WHEN "yes" THEN count(age)
+        #     WHEN "no" THEN  0
+        #     WHEN "unknown" THEN 0
+        # END as yes,
+        # CASE underage_involved
+        #     WHEN "yes" THEN 0
+        #     WHEN "no" THEN  count(age)
+        #     WHEN "unknown" THEN 0
+        # END as no,
+        # CASE underage_involved
+        #     WHEN "yes" THEN 0
+        #     WHEN "no" THEN  0
+        #     WHEN "unknown" THEN count(age)
+        # END as unknown
+        # from reports
+        # Group by reports.underage_involved, date_report
+    
     csv_data = df.to_csv()
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=underage.csv"
     output.headers["Content-type"] = "text/csv"
+    conn.close()
     os.remove("%s.db"%(filename))
     return(output)
 
