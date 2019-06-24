@@ -8,11 +8,12 @@ import sqlite3
 import csv
 import os
 import logging
+import dataset
 logging.basicConfig(level=logging.INFO)
 
 
 # To get server  running:
-# $export FLASK_APP=server_flask.py
+# $export FLASK_APP=bvmstatserver.py
 # $flask run
 
 app = Flask(__name__)
@@ -20,7 +21,7 @@ app.config['debug'] = False
 
 @app.route('/')
 def hello_world():
-    return 'Hello, World!'
+    return 'Server is running!'
 
 # orgas:
 # Shows which organization documented how many reports
@@ -268,5 +269,210 @@ def asylum():
     os.remove("%s.db"%(filename))
     return(output)
 
+@app.route('/pushback_from_counter')
+def pushback_from_counter():
+    filename=update()
+    db = dataset.connect("sqlite:///%s.db"%(filename))
+    tempdb = db["temp"]
+    conn = sqlite3.connect("%s.db"%(filename))
+    df = pd.read_sql_query("SELECT id, pushback_from FROM reports",conn) 
+    x= 0
+    while x < len(df):
+        report_id = df["id"][x]
+        pf = df["pushback_from"][x].split(" | ")
+        for country in pf:
+            if country == "":
+                country = "Unknown"
+            tempdb.upsert(
+                {"report_id":str(report_id), "pushback_from":str(country)}, ["report_id","pushback_from"]
+                )
+        x=x+1
+    df2 = pd.read_sql_query("SELECT pushback_from, count(id) FROM temp GROUP BY pushback_from ORDER BY count(id) DESC", conn)
+    csv_data = df2.to_csv()
+    output = make_response(csv_data)
+    output.headers["Content-Disposition"] = "attachment; filename=pushback_from_counter.csv"
+    output.headers["Content-type"] = "text/csv"
+    conn.close()
+    os.remove("%s.db"%(filename))
+    return (output)
+
+@app.route('/pushback_to_counter')
+def pushback_to_counter():
+    filename=update()
+    db = dataset.connect("sqlite:///%s.db"%(filename))
+    tempdb = db["temp"]
+    conn = sqlite3.connect("%s.db"%(filename))
+    df = pd.read_sql_query("SELECT id, pushback_to FROM reports",conn) 
+    x= 0
+    while x < len(df):
+        report_id = df["id"][x]
+        pf = df["pushback_to"][x].split(" | ")
+        for country in pf:
+            if country == "":
+                country = "Unknown"
+            tempdb.upsert(
+                {"report_id":str(report_id), "pushback_to":str(country)}, ["report_id","pushback_from"]
+                )
+        x=x+1
+    df2 = pd.read_sql_query("SELECT pushback_to, count(id) FROM temp GROUP BY pushback_to ORDER BY count(id) DESC", conn)
+    csv_data = df2.to_csv()
+    output = make_response(csv_data)
+    output.headers["Content-Disposition"] = "attachment; filename=pushback_to_counter.csv"
+    output.headers["Content-type"] = "text/csv"
+    conn.close()
+    os.remove("%s.db"%(filename))
+    return (output)
+
+@app.route('/pushback_from_date')
+def pushback_from_date():
+    filename=update()
+    db = dataset.connect("sqlite:///%s.db"%(filename))
+    tempdb = db["temp"]
+    conn = sqlite3.connect("%s.db"%(filename))
+    df = pd.read_sql_query("SELECT id, SUBSTR(date,0,8) as date_yyyy_mm, pushback_from FROM reports",conn) 
+    x= 0
+    while x < len(df):
+        report_id = df["id"][x]
+        date_yyyy_mm = df["date_yyyy_mm"][x]
+        pf = df["pushback_from"][x].split(" | ")
+        for country in pf:
+            if country == "":
+                country = "Unknown"
+            tempdb.upsert(
+                {"date_yyyy_mm": date_yyyy_mm, "report_id":str(report_id), "pushback_from":str(country)}, ["report_id","pushback_from"]
+                )
+        x=x+1
+    df2 = pd.read_sql_query("SELECT date_yyyy_mm, pushback_from, count(id) FROM temp GROUP BY date_yyyy_mm, pushback_from ORDER BY date_yyyy_mm", conn)
+    csv_data = df2.to_csv()
+    output = make_response(csv_data)
+    output.headers["Content-Disposition"] = "attachment; filename=pushback_from_date.csv"
+    output.headers["Content-type"] = "text/csv"
+    conn.close()
+    os.remove("%s.db"%(filename))
+    return (output)
+
+@app.route('/pushback_to_date')
+def pushback_to_date():
+    filename=update()
+    db = dataset.connect("sqlite:///%s.db"%(filename))
+    tempdb = db["temp"]
+    conn = sqlite3.connect("%s.db"%(filename))
+    df = pd.read_sql_query("SELECT id, SUBSTR(date,0,8) as date_yyyy_mm, pushback_to FROM reports",conn) 
+    x= 0
+    while x < len(df):
+        report_id = df["id"][x]
+        date_yyyy_mm = df["date_yyyy_mm"][x]
+        pf = df["pushback_to"][x].split(" | ")
+        for country in pf:
+            if country == "":
+                country = "Unknown"
+            tempdb.upsert(
+                {"date_yyyy_mm": date_yyyy_mm, "report_id":str(report_id), "pushback_to":str(country)}, ["report_id","pushback_from"]
+                )
+        x=x+1
+    df2 = pd.read_sql_query("SELECT date_yyyy_mm, pushback_to, count(id) FROM temp GROUP BY date_yyyy_mm, pushback_to ORDER BY date_yyyy_mm", conn)
+    csv_data = df2.to_csv()
+    output = make_response(csv_data)
+    output.headers["Content-Disposition"] = "attachment; filename=pushback_to_date.csv"
+    output.headers["Content-type"] = "text/csv"
+    conn.close()
+    os.remove("%s.db"%(filename))
+    return (output)
+
+@app.route('/chainpushback')
+def chainpushback():
+    filename=update()
+    db = dataset.connect("sqlite:///%s.db"%(filename))
+    tempdb = db["temp"]
+    conn = sqlite3.connect("%s.db"%(filename))
+    df = pd.read_sql_query("SELECT id, pushback_to, pushback_from FROM reports",conn) 
+    x= 0
+    while x < len(df):
+        report_id = df["id"][x]
+        pf = df["pushback_to"][x].split(" | ")
+        pt = df["pushback_from"][x].split(" | ")
+        if len(pf)>1 or len(pt)>1:
+            chain_pushback = "Chain push back"
+        if len(pf) == 1 or len(pt) == 1:
+            chain_pushback = "No chain push back"
+        tempdb.upsert(
+            {"report_id":str(report_id), "chain_pushback" : chain_pushback}, ["report_id"]
+                )
+        x=x+1
+    df2 = pd.read_sql_query("SELECT count(id), chain_pushback FROM temp GROUP BY chain_pushback ORDER BY count(id) DESC", conn)
+    csv_data = df2.to_csv()
+    output = make_response(csv_data)
+    output.headers["Content-Disposition"] = "attachment; filename=chainpushback.csv"
+    output.headers["Content-type"] = "text/csv"
+    conn.close()
+    os.remove("%s.db"%(filename))
+    return (output)
+
+@app.route('/violence')
+def violence():
+    filename=update()
+    db = dataset.connect("sqlite:///%s.db"%(filename))
+    tempdb = db["temp"]
+    conn = sqlite3.connect("%s.db"%(filename))
+    df = pd.read_sql_query("SELECT id, types_of_violence_used FROM reports",conn) 
+    x= 0
+    while x < len(df):
+        report_id = df["id"][x]
+        try: 
+            violences = df["types_of_violence_used"][x].split(" | ")
+        except AttributeError:
+            v = "Unknown"
+        for v in violences:
+            if v == "":
+                v = "Unknown"
+            tempdb.upsert(
+                {"report_id":str(report_id), "types_of_violence_used":str(v)}, ["report_id","types_of_violence_used"]
+                )
+        x=x+1
+    df2 = pd.read_sql_query("SELECT types_of_violence_used, count(id) FROM temp GROUP BY types_of_violence_used ORDER BY count(id) DESC", conn)
+    csv_data = df2.to_csv()
+    output = make_response(csv_data)
+    output.headers["Content-Disposition"] = "attachment; filename=violence.csv"
+    output.headers["Content-type"] = "text/csv"
+    conn.close()
+    os.remove("%s.db"%(filename))
+    return (output)
+
+@app.route('/countries_of_origin')
+def countries_of_origin():
+    filename=update()
+    db = dataset.connect("sqlite:///%s.db"%(filename))
+    tempdb = db["temp"]
+    conn = sqlite3.connect("%s.db"%(filename))
+    df = pd.read_sql_query("SELECT id, countries_of_origin FROM reports",conn) 
+    x= 0
+    while x < len(df):
+        report_id = df["id"][x]
+        countries = df["countries_of_origin"][x].split(" | ")
+        for country in countries:
+            if country == "":
+                country = "Unknown"
+            tempdb.upsert(
+                {"report_id":str(report_id), "countries_of_origin":str(country)}, ["report_id","pushback_from"]
+                )
+        x=x+1
+    df2 = pd.read_sql_query("SELECT countries_of_origin, count(id) FROM temp GROUP BY countries_of_origin ORDER BY count(id) DESC", conn)
+    csv_data = df2.to_csv()
+    output = make_response(csv_data)
+    output.headers["Content-Disposition"] = "attachment; filename=countries_of_origin.csv"
+    output.headers["Content-type"] = "text/csv"
+    conn.close()
+    os.remove("%s.db"%(filename))
+    return (output)
+
+    # To Do:
+    # Adapt country-coudes
+    # Types of violence
+    # Country of origin
+
+
+
+
+    
 if __name__ == '__main__':
     hello_world()
