@@ -26,8 +26,8 @@ def hello_world():
 
 # orgas:
 # Shows which organization documented how many reports
-@app.route('/csv-export')
-def csv-export():
+@app.route('/csv_export')
+def csv_export():
     filename=update()
     conn = sqlite3.connect("%s.db"%(filename))
     df = pd.read_sql_query("SELECT * FROM reports ORDER BY date", conn)
