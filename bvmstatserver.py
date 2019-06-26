@@ -24,25 +24,25 @@ app.config['debug'] = False
 def hello_world():
     return 'Server is running!'
 
+
+# @app.route('/csv_export')
+# def csv_export():
+#     filename=update()
+#     conn = sqlite3.connect("%s.db"%(filename))
+#     df = pd.read_sql_query("SELECT * FROM reports ORDER BY date", conn)
+#     csv_data = df.to_csv()
+#     output = make_response(csv_data)
+#     now = str(datetime.datetime.now()).replace(" ","-")
+#     now = now.replace(":","_")
+#     now = now[:19]
+#     output.headers["Content-Disposition"] = "attachment; filename=borderviolence_reports_%s.csv"%(now)
+#     output.headers["Content-type"] = "text/csv"
+#     conn.close()
+#     os.remove("%s.db"%(filename))
+#     return(output)
+
 # orgas:
 # Shows which organization documented how many reports
-@app.route('/csv_export')
-def csv_export():
-    filename=update()
-    conn = sqlite3.connect("%s.db"%(filename))
-    df = pd.read_sql_query("SELECT * FROM reports ORDER BY date", conn)
-    csv_data = df.to_csv()
-    output = make_response(csv_data)
-    now = str(datetime.datetime.now()).replace(" ","-")
-    now = now.replace(":","_")
-    now = now[:19]
-    output.headers["Content-Disposition"] = "attachment; filename=borderviolence_reports_%s.csv"%(now)
-    output.headers["Content-type"] = "text/csv"
-    conn.close()
-    os.remove("%s.db"%(filename))
-    return(output)
-
-
 @app.route('/orgas')
 def orgas():
     filename=update()
