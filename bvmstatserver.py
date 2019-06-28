@@ -424,9 +424,9 @@ def chainpushback():
         pf = df["pushback_to"][x].split(" | ")
         pt = df["pushback_from"][x].split(" | ")
         if len(pf)>1 or len(pt)>1:
-            chain_pushback = "Chain push back"
+            chain_pushback = "Yes"
         if len(pf) == 1 or len(pt) == 1:
-            chain_pushback = "No chain push back"
+            chain_pushback = "No"
         tempdb.upsert(
             {"report_id":str(report_id), "chain_pushback" : chain_pushback}, ["report_id"]
                 )
