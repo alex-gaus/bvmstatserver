@@ -9,7 +9,10 @@ import csv
 import os
 import logging
 import dataset
+import time
 import datetime
+from cachetools import cached, TTLCache
+cache= TTLCache(maxsize=1000, ttl=100)
 logging.basicConfig(level=logging.INFO)
 
 
@@ -20,29 +23,31 @@ logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
 app.config['debug'] = False
 
+@cached(cache)
 @app.route('/')
 def hello_world():
     return 'Server is running!'
 
-
-# @app.route('/csv_export')
-# def csv_export():
-#     filename=update()
-#     conn = sqlite3.connect("%s.db"%(filename))
-#     df = pd.read_sql_query("SELECT * FROM reports ORDER BY date", conn)
-#     csv_data = df.to_csv()
-#     output = make_response(csv_data)
-#     now = str(datetime.datetime.now()).replace(" ","-")
-#     now = now.replace(":","_")
-#     now = now[:19]
-#     output.headers["Content-Disposition"] = "attachment; filename=borderviolence_reports_%s.csv"%(now)
-#     output.headers["Content-type"] = "text/csv"
-#     conn.close()
-#     os.remove("%s.db"%(filename))
-#     return(output)
+@cached(cache)
+@app.route('/csv_export')
+def csv_export():
+    filename=update()
+    conn = sqlite3.connect("%s.db"%(filename))
+    df = pd.read_sql_query("SELECT * FROM reports ORDER BY date", conn)
+    csv_data = df.to_csv()
+    output = make_response(csv_data)
+    now = str(datetime.datetime.now()).replace(" ","-")
+    now = now.replace(":","_")
+    now = now[:19]
+    output.headers["Content-Disposition"] = "attachment; filename=borderviolence_reports_%s.csv"%(now)
+    output.headers["Content-type"] = "text/csv"
+    conn.close()
+    # os.remove("%s.db"%(filename))
+    return(output)
 
 # orgas:
 # Shows which organization documented how many reports
+@cached(cache)
 @app.route('/orgas')
 def orgas():
     filename=update()
@@ -53,11 +58,12 @@ def orgas():
     output.headers["Content-Disposition"] = "attachment; filename=orgas.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename))
     return(output)
 
 # reports
 # Shows how many reports were reported by month (+ the group size)
+@cached(cache)
 @app.route('/reports')
 def reports():
     filename=update()
@@ -69,12 +75,13 @@ def reports():
     output.headers["Content-Disposition"] = "attachment; filename=reports.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename))
     logging.info(output)
     return(output)
 
 # underage
 # Shows how many pushbacks involed minors
+@cached(cache)
 @app.route('/underage')
 def underage():
     filename=update()
@@ -156,11 +163,12 @@ def underage():
     output.headers["Content-Disposition"] = "attachment; filename=underage.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename))
     return(output)
 
 # women
 # Shows how many pushbacks involed women
+@cached(cache)
 @app.route('/women')
 def women():
     filename=update()
@@ -222,11 +230,12 @@ def women():
     output.headers["Content-Disposition"] = "attachment; filename=women.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename))
     return(output)
 
 # asylum
 # Shows for how many pushbacks the request to ask for asylum was denied
+@cached(cache)
 @app.route('/asylum')
 def asylum():
     filename=update()
@@ -284,9 +293,10 @@ def asylum():
     output.headers["Content-Disposition"] = "attachment; filename=asylum.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename))
     return(output)
 
+@cached(cache)
 @app.route('/pushback_from_counter')
 def pushback_from_counter():
     filename=update()
@@ -311,9 +321,10 @@ def pushback_from_counter():
     output.headers["Content-Disposition"] = "attachment; filename=pushback_from_counter.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename))
     return (output)
 
+@cached(cache)
 @app.route('/pushback_to_counter')
 def pushback_to_counter():
     filename=update()
@@ -338,9 +349,10 @@ def pushback_to_counter():
     output.headers["Content-Disposition"] = "attachment; filename=pushback_to_counter.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename))
     return (output)
 
+@cached(cache)
 @app.route('/pushback_from_date')
 def pushback_from_date():
     filename=update()
@@ -366,9 +378,10 @@ def pushback_from_date():
     output.headers["Content-Disposition"] = "attachment; filename=pushback_from_date.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename))
     return (output)
 
+@cached(cache)
 @app.route('/pushback_to_date')
 def pushback_to_date():
     filename=update()
@@ -394,9 +407,10 @@ def pushback_to_date():
     output.headers["Content-Disposition"] = "attachment; filename=pushback_to_date.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename))
     return (output)
 
+@cached(cache)
 @app.route('/chainpushback')
 def chainpushback():
     filename=update()
@@ -423,19 +437,20 @@ def chainpushback():
     output.headers["Content-Disposition"] = "attachment; filename=chainpushback.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename))
     return (output)
 
+@cached(cache)
 @app.route('/violence')
 def violence():
     filename=update()
     db = dataset.connect("sqlite:///%s.db"%(filename))
     tempdb = db["temp"]
     conn = sqlite3.connect("%s.db"%(filename))
-    df = pd.read_sql_query("SELECT id, types_of_violence_used FROM reports",conn) 
+    df = pd.read_sql_query("SELECT report_link, types_of_violence_used FROM reports",conn) 
     x= 0
     while x < len(df):
-        report_id = df["id"][x]
+        report_link = df["report_link"][x]
         try: 
             violences = df["types_of_violence_used"][x].split(" | ")
         except AttributeError:
@@ -444,18 +459,19 @@ def violence():
             if v == "":
                 v = "Unknown"
             tempdb.upsert(
-                {"report_id":str(report_id), "types_of_violence_used":str(v)}, ["report_id","types_of_violence_used"]
+                {"report_link":report_link, "types_of_violence_used":str(v)}, ["report_link","types_of_violence_used"]
                 )
         x=x+1
-    df2 = pd.read_sql_query("SELECT types_of_violence_used, count(id) FROM temp GROUP BY types_of_violence_used ORDER BY count(id) DESC", conn)
+    df2 = pd.read_sql_query("SELECT types_of_violence_used, count(report_link) FROM temp GROUP BY types_of_violence_used ORDER BY count(report_link) DESC", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=violence.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename))
     return (output)
 
+@cached(cache)
 @app.route('/countries_of_origin')
 def countries_of_origin():
     filename=update()
@@ -480,7 +496,7 @@ def countries_of_origin():
     output.headers["Content-Disposition"] = "attachment; filename=countries_of_origin.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename))
     return (output)
 
     # To Do:

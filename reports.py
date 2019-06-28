@@ -6,8 +6,13 @@ from operator import itemgetter
 from credentials import botid
 import pandas
 import logging
+import time
+import datetime
+from cachetools import cached, TTLCache
+cache= TTLCache(maxsize=1000, ttl=100)
 logging.basicConfig(level=logging.INFO)
 
+@cached(cache)
 def get_reports():
     logging.info("get_reports started")
     cookies = {
