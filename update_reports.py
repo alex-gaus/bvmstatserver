@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO)
 @cached(cache)
 def update():
     logging.info("update started")
-    # filename = "reports"
+    filename = "reports"
     # os.popen('cp reports.db %s.db'%(filename)) 
     db = dataset.connect('mysql+mysqlconnector://gobitodic:subotica@gobitodic.mysql.pythonanywhere-services.com/gobitodic$reports')
     # db = dataset.connect("sqlite:///%s.db"%(filename))
@@ -23,4 +23,4 @@ def update():
     for report in reports:
         reportsdb.upsert(report,["report_link"])
     db.commit()
-    return True
+    return filename
