@@ -314,8 +314,8 @@ def pushback_from_counter():
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, pushback_from FROM reports",conn) 
     x= 0
-    db.begin()
     tempdb.delete()
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         pf = df["pushback_from"][x].split(" | ")
@@ -346,8 +346,8 @@ def pushback_to_counter():
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, pushback_to FROM reports",conn) 
     x= 0
-    db.begin()
     tempdb.delete()
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         pf = df["pushback_to"][x].split(" | ")
@@ -378,8 +378,8 @@ def pushback_from_date():
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, SUBSTR(date,0,8) as date_yyyy_mm, pushback_from FROM reports",conn) 
     x= 0
-    db.begin()
     tempdb.delete()
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         date_yyyy_mm = df["date_yyyy_mm"][x]
@@ -411,8 +411,8 @@ def pushback_to_date():
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, SUBSTR(date,0,8) as date_yyyy_mm, pushback_to FROM reports",conn) 
     x= 0
-    db.begin()
     tempdb.delete()
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         date_yyyy_mm = df["date_yyyy_mm"][x]
@@ -444,8 +444,8 @@ def chainpushback():
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, pushback_to, pushback_from FROM reports",conn) 
     x= 0
-    db.begin()
     tempdb.delete()
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         pf = df["pushback_to"][x].split(" | ")
@@ -478,8 +478,8 @@ def violence():
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, types_of_violence_used FROM reports",conn) 
     x= 0
-    db.begin()
     tempdb.delete()
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         try: 
@@ -513,8 +513,8 @@ def countries_of_origin():
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, countries_of_origin FROM reports",conn) 
     x= 0
-    db.begin()
     tempdb.delete()
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         countries = df["countries_of_origin"][x].split(" | ")
