@@ -13,6 +13,7 @@ import logging
 import dataset
 import time
 import datetime
+import gc
 from cachetools import cached, TTLCache
 cache= TTLCache(maxsize=1000, ttl=1000)
 logging.basicConfig(level=logging.INFO)
@@ -336,6 +337,8 @@ def pushback_from_counter():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    del db
+    gc.collect()
     return (output)
 
 @cached(cache)
@@ -370,6 +373,8 @@ def pushback_to_counter():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    del db
+    gc.collect()
     return (output)
 
 @cached(cache)
@@ -405,6 +410,8 @@ def pushback_from_date():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    del db
+    gc.collect()
     return (output)
 
 @cached(cache)
@@ -440,6 +447,8 @@ def pushback_to_date():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    del db
+    gc.collect()
     return (output)
 
 @cached(cache)
@@ -476,6 +485,8 @@ def chainpushback():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    del db
+    gc.collect()
     return (output)
 
 @cached(cache)
@@ -513,6 +524,8 @@ def violence():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    del db
+    gc.collect()
     return (output)
 
 @cached(cache)
@@ -547,6 +560,8 @@ def countries_of_origin():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    del db
+    gc.collect()
     return (output)
 
     # To Do:
