@@ -315,13 +315,14 @@ def pushback_from_counter():
     df = pd.read_sql_query("SELECT report_link, pushback_from FROM reports",conn) 
     x= 0
     db.begin()
+    tempdb.delete()
     while x < len(df):
         report_link = df["report_link"][x]
         pf = df["pushback_from"][x].split(" | ")
         for country in pf:
             if country == "":
                 country = "Unknown"
-            tempdb.upsert(
+            tempdb.insert(
                 {"report_link":report_link, "pushback_from":str(country)}, ["report_link","pushback_from"]
                 )
         x=x+1
@@ -346,13 +347,14 @@ def pushback_to_counter():
     df = pd.read_sql_query("SELECT report_link, pushback_to FROM reports",conn) 
     x= 0
     db.begin()
+    tempdb.delete()
     while x < len(df):
         report_link = df["report_link"][x]
         pf = df["pushback_to"][x].split(" | ")
         for country in pf:
             if country == "":
                 country = "Unknown"
-            tempdb.upsert(
+            tempdb.insert(
                 {"report_link":report_link, "pushback_to":str(country)}, ["report_link","pushback_from"]
                 )
         x=x+1
@@ -377,6 +379,7 @@ def pushback_from_date():
     df = pd.read_sql_query("SELECT report_link, SUBSTR(date,0,8) as date_yyyy_mm, pushback_from FROM reports",conn) 
     x= 0
     db.begin()
+    tempdb.delete()
     while x < len(df):
         report_link = df["report_link"][x]
         date_yyyy_mm = df["date_yyyy_mm"][x]
@@ -384,7 +387,7 @@ def pushback_from_date():
         for country in pf:
             if country == "":
                 country = "Unknown"
-            tempdb.upsert(
+            tempdb.insert(
                 {"date_yyyy_mm": date_yyyy_mm, "report_link":str(report_link), "pushback_from":str(country)}, ["report_link","pushback_from"]
                 )
         x=x+1
@@ -409,6 +412,7 @@ def pushback_to_date():
     df = pd.read_sql_query("SELECT report_link, SUBSTR(date,0,8) as date_yyyy_mm, pushback_to FROM reports",conn) 
     x= 0
     db.begin()
+    tempdb.delete()
     while x < len(df):
         report_link = df["report_link"][x]
         date_yyyy_mm = df["date_yyyy_mm"][x]
@@ -416,7 +420,7 @@ def pushback_to_date():
         for country in pf:
             if country == "":
                 country = "Unknown"
-            tempdb.upsert(
+            tempdb.insert(
                 {"date_yyyy_mm": date_yyyy_mm, "report_link":report_link, "pushback_to":str(country)}, ["report_link","pushback_from"]
                 )
         x=x+1
@@ -441,6 +445,7 @@ def chainpushback():
     df = pd.read_sql_query("SELECT report_link, pushback_to, pushback_from FROM reports",conn) 
     x= 0
     db.begin()
+    tempdb.delete()
     while x < len(df):
         report_link = df["report_link"][x]
         pf = df["pushback_to"][x].split(" | ")
@@ -449,7 +454,7 @@ def chainpushback():
             chain_pushback = "Yes"
         if len(pf) == 1 or len(pt) == 1:
             chain_pushback = "No"
-        tempdb.upsert(
+        tempdb.insert(
             {"report_link":report_link, "chain_pushback" : chain_pushback}, ["report_link"]
                 )
         x=x+1
@@ -474,6 +479,7 @@ def violence():
     df = pd.read_sql_query("SELECT report_link, types_of_violence_used FROM reports",conn) 
     x= 0
     db.begin()
+    tempdb.delete()
     while x < len(df):
         report_link = df["report_link"][x]
         try: 
@@ -483,7 +489,7 @@ def violence():
         for v in violences:
             if v == "":
                 v = "Unknown"
-            tempdb.upsert(
+            tempdb.insert(
                 {"report_link":report_link, "types_of_violence_used":str(v)}, ["report_link","types_of_violence_used"]
                 )
         x=x+1
@@ -508,13 +514,14 @@ def countries_of_origin():
     df = pd.read_sql_query("SELECT report_link, countries_of_origin FROM reports",conn) 
     x= 0
     db.begin()
+    tempdb.delete()
     while x < len(df):
         report_link = df["report_link"][x]
         countries = df["countries_of_origin"][x].split(" | ")
         for country in countries:
             if country == "":
                 country = "Unknown"
-            tempdb.upsert(
+            tempdb.insert(
                 {"report_link":str(report_link), "countries_of_origin":str(country)}, ["report_link","pushback_from"]
                 )
         x=x+1
