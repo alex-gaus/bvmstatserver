@@ -327,6 +327,8 @@ def pushback_from_counter():
                 )
         x=x+1
     db.commit()
+    conn.close()
+    conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df2 = pd.read_sql_query("SELECT pushback_from, count(report_link) FROM pushback_from_counter GROUP BY pushback_from ORDER BY count(report_link) DESC", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
@@ -359,6 +361,8 @@ def pushback_to_counter():
                 )
         x=x+1
     db.commit()
+    conn.close()
+    conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df2 = pd.read_sql_query("SELECT pushback_to, count(report_link) FROM pushback_to_counter GROUP BY pushback_to ORDER BY count(report_link) DESC", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
@@ -392,6 +396,8 @@ def pushback_from_date():
                 )
         x=x+1
     db.commit()
+    conn.close()
+    conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df2 = pd.read_sql_query("SELECT date_yyyy_mm, pushback_from, count(report_link) FROM pushback_from_date GROUP BY date_yyyy_mm, pushback_from ORDER BY date_yyyy_mm", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
@@ -425,6 +431,8 @@ def pushback_to_date():
                 )
         x=x+1
     db.commit()
+    conn.close()
+    conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df2 = pd.read_sql_query("SELECT date_yyyy_mm, pushback_to, count(report_link) FROM pushback_to_date GROUP BY date_yyyy_mm, pushback_to ORDER BY date_yyyy_mm", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
@@ -496,6 +504,8 @@ def violence():
                 )
         x=x+1
     db.commit()
+    conn.close()
+    conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df2 = pd.read_sql_query("SELECT types_of_violence_used, count(report_link) FROM violence GROUP BY types_of_violence_used ORDER BY count(report_link) DESC", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
@@ -528,6 +538,8 @@ def countries_of_origin():
                 )
         x=x+1
     db.commit()
+    conn.close()
+    conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df2 = pd.read_sql_query("SELECT countries_of_origin, count(report_link) FROM countries_of_origin GROUP BY countries_of_origin ORDER BY count(report_link) DESC", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
