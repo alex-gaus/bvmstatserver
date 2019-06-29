@@ -12,6 +12,7 @@ logging.basicConfig(level=logging.INFO)
 
 @cached(cache)
 def update():
+    gc.collect()
     logging.info("update started")
     filename = "sqlite:///:reports.db"
     # filename  = "mysql+mysqlconnector://gobitodic:subotica@gobitodic.mysql.pythonanywhere-services.com/gobitodic$reports"
@@ -25,5 +26,4 @@ def update():
         reportsdb.insert(report)
     db.commit()
     del db
-    gc.collect()
     return filename
