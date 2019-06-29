@@ -73,7 +73,7 @@ def reports():
     filename=update()
     # conn = sqlite3.connect(filename,timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
-    df = pd.read_sql_query("SELECT SUBSTRING(date,0,8) as date_yyyy_mm, count(date) as counter, sum(group_size) as size FROM reports GROUP BY date_yyyy_mm", conn)
+    df = pd.read_sql_query("SELECT SUBSTRING(date,1,9) as date_yyyy_mm, count(date) as counter, sum(group_size) as size FROM reports GROUP BY date_yyyy_mm", conn)
     csv_data = df.to_csv()
     logging.info(csv_data)
     output = make_response(csv_data)
@@ -376,7 +376,7 @@ def pushback_from_date():
     tempdb = db["pushback_from_date"]
     # conn = sqlite3.connect(filename,timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
-    df = pd.read_sql_query("SELECT report_link, SUBSTRING(date,0,8) as date_yyyy_mm, pushback_from FROM reports",conn) 
+    df = pd.read_sql_query("SELECT report_link, SUBSTRING(date,1,9) as date_yyyy_mm, pushback_from FROM reports",conn) 
     x= 0
     tempdb.delete()
     db.begin()
@@ -409,7 +409,7 @@ def pushback_to_date():
     tempdb = db["pushback_to_date"]
     # conn = sqlite3.connect(filename,timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
-    df = pd.read_sql_query("SELECT report_link, SUBSTRING(date,0,8) as date_yyyy_mm, pushback_to FROM reports",conn) 
+    df = pd.read_sql_query("SELECT report_link, SUBSTRING(date,1,9) as date_yyyy_mm, pushback_to FROM reports",conn) 
     x= 0
     tempdb.delete()
     db.begin()
