@@ -32,7 +32,7 @@ def hello_world():
 @app.route('/csv_export')
 def csv_export():
     filename=update()
-    conn = sqlite3.connect(filename),timeout=30.0)
+    conn = sqlite3.connect(filename,timeout=30.0)
     df = pd.read_sql_query("SELECT * FROM reports ORDER BY date", conn)
     csv_data = df.to_csv()
     output = make_response(csv_data)
