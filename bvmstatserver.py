@@ -424,7 +424,7 @@ def chainpushback():
     filename=update()
     db = dataset.connect(filename)
     tempdb = db["chainpushback"]
-    conn = sqlite3.connect(filenam),timeout=30.0)
+    conn = sqlite3.connect(filename,timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, pushback_to, pushback_from FROM reports",conn) 
     x= 0
     db.begin()
