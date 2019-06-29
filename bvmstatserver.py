@@ -441,7 +441,7 @@ def chainpushback():
     db = dataset.connect(filename)
     tempdb = db["chainpushback"]
     # conn = sqlite3.connect(filename,timeout=30.0)
-    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
+    conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, pushback_to, pushback_from FROM reports",conn) 
     x= 0
     tempdb.delete()
@@ -459,6 +459,8 @@ def chainpushback():
                 )
         x=x+1
     db.commit()
+    conn.close()
+    conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df2 = pd.read_sql_query("SELECT count(report_link), chain_pushback FROM chainpushback GROUP BY chain_pushback ORDER BY count(report_link) DESC", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
