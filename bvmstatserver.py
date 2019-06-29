@@ -32,7 +32,7 @@ def hello_world():
 @app.route('/csv_export')
 def csv_export():
     filename=update()
-    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
+    conn = sqlite3.connect(filename),timeout=30.0)
     df = pd.read_sql_query("SELECT * FROM reports ORDER BY date", conn)
     csv_data = df.to_csv()
     output = make_response(csv_data)
@@ -51,7 +51,7 @@ def csv_export():
 @app.route('/orgas')
 def orgas():
     filename=update()
-    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
+    conn = sqlite3.connect(filename,timeout=30.0)
     df = pd.read_sql_query("SELECT incident_author, COUNT(date) FROM reports GROUP BY incident_author", conn)
     csv_data = df.to_csv()
     output = make_response(csv_data)
@@ -67,7 +67,7 @@ def orgas():
 @app.route('/reports')
 def reports():
     filename=update()
-    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
+    conn = sqlite3.connect(filename,timeout=30.0)
     df = pd.read_sql_query("SELECT SUBSTR(date,0,8) as date_yyyy_mm, count(date) as counter, sum(group_size) as size FROM reports GROUP BY date_yyyy_mm", conn)
     csv_data = df.to_csv()
     logging.info(csv_data)
@@ -85,7 +85,7 @@ def reports():
 @app.route('/underage')
 def underage():
     filename=update()
-    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
+    conn = sqlite3.connect(filename,timeout=30.0)
     df = pd.read_sql_query("""
         SELECT 
         a.underage_involved,
@@ -172,7 +172,7 @@ def underage():
 @app.route('/women')
 def women():
     filename=update()
-    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
+    conn = sqlite3.connect(filename,timeout=30.0)
     df = pd.read_sql_query("""
         SELECT 
         CASE a.women_involved
@@ -239,7 +239,7 @@ def women():
 @app.route('/asylum')
 def asylum():
     filename=update()
-    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
+    conn = sqlite3.connect(filename,timeout=30.0)
     df = pd.read_sql_query("""
         SELECT 
         a.intention_asylum_expressed,
@@ -302,9 +302,10 @@ def pushback_from_counter():
     filename=update()
     db = dataset.connect("sqlite:///%s.db"%(filename))
     tempdb = db["pushback_from_counter"]
-    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
+    conn = sqlite3.connect(filename,timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, pushback_from FROM reports",conn) 
     x= 0
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         pf = df["pushback_from"][x].split(" | ")
@@ -315,6 +316,7 @@ def pushback_from_counter():
                 {"report_link":report_link, "pushback_from":str(country)}, ["report_link","pushback_from"]
                 )
         x=x+1
+    db.commit()
     df2 = pd.read_sql_query("SELECT pushback_from, count(report_link) FROM pushback_from_counter GROUP BY pushback_from ORDER BY count(report_link) DESC", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
@@ -328,11 +330,12 @@ def pushback_from_counter():
 @app.route('/pushback_to_counter')
 def pushback_to_counter():
     filename=update()
-    db = dataset.connect("sqlite:///%s.db"%(filename))
+    db = dataset.connect(filename)
     tempdb = db["pushback_to_counter"]
-    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
+    conn = sqlite3.connect(filename,timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, pushback_to FROM reports",conn) 
     x= 0
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         pf = df["pushback_to"][x].split(" | ")
@@ -343,6 +346,7 @@ def pushback_to_counter():
                 {"report_link":report_link, "pushback_to":str(country)}, ["report_link","pushback_from"]
                 )
         x=x+1
+    db.commit()
     df2 = pd.read_sql_query("SELECT pushback_to, count(report_link) FROM pushback_to_counter GROUP BY pushback_to ORDER BY count(report_link) DESC", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
@@ -356,11 +360,12 @@ def pushback_to_counter():
 @app.route('/pushback_from_date')
 def pushback_from_date():
     filename=update()
-    db = dataset.connect("sqlite:///%s.db"%(filename))
+    db = dataset.connect(filename)
     tempdb = db["pushback_from_date"]
-    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
+    conn = sqlite3.connect(filename,timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, SUBSTR(date,0,8) as date_yyyy_mm, pushback_from FROM reports",conn) 
     x= 0
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         date_yyyy_mm = df["date_yyyy_mm"][x]
@@ -372,6 +377,7 @@ def pushback_from_date():
                 {"date_yyyy_mm": date_yyyy_mm, "report_link":str(report_link), "pushback_from":str(country)}, ["report_link","pushback_from"]
                 )
         x=x+1
+    db.commit()
     df2 = pd.read_sql_query("SELECT date_yyyy_mm, pushback_from, count(report_link) FROM pushback_from_date GROUP BY date_yyyy_mm, pushback_from ORDER BY date_yyyy_mm", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
@@ -385,11 +391,12 @@ def pushback_from_date():
 @app.route('/pushback_to_date')
 def pushback_to_date():
     filename=update()
-    db = dataset.connect("sqlite:///%s.db"%(filename))
+    db = dataset.connect(filename)
     tempdb = db["pushback_to_date"]
-    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
+    conn = sqlite3.connect(filename,timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, SUBSTR(date,0,8) as date_yyyy_mm, pushback_to FROM reports",conn) 
     x= 0
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         date_yyyy_mm = df["date_yyyy_mm"][x]
@@ -401,6 +408,7 @@ def pushback_to_date():
                 {"date_yyyy_mm": date_yyyy_mm, "report_link":report_link, "pushback_to":str(country)}, ["report_link","pushback_from"]
                 )
         x=x+1
+    db.commit()
     df2 = pd.read_sql_query("SELECT date_yyyy_mm, pushback_to, count(report_link) FROM pushback_to_date GROUP BY date_yyyy_mm, pushback_to ORDER BY date_yyyy_mm", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
@@ -414,11 +422,12 @@ def pushback_to_date():
 @app.route('/chainpushback')
 def chainpushback():
     filename=update()
-    db = dataset.connect("sqlite:///%s.db"%(filename))
+    db = dataset.connect(filename)
     tempdb = db["chainpushback"]
-    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
+    conn = sqlite3.connect(filenam),timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, pushback_to, pushback_from FROM reports",conn) 
     x= 0
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         pf = df["pushback_to"][x].split(" | ")
@@ -431,6 +440,7 @@ def chainpushback():
             {"report_link":report_link, "chain_pushback" : chain_pushback}, ["report_link"]
                 )
         x=x+1
+    db.commit()
     df2 = pd.read_sql_query("SELECT count(report_link), chain_pushback FROM chainpushback GROUP BY chain_pushback ORDER BY count(report_link) DESC", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
@@ -444,11 +454,12 @@ def chainpushback():
 @app.route('/violence')
 def violence():
     filename=update()
-    db = dataset.connect("sqlite:///%s.db"%(filename))
+    db = dataset.connect(filename)
     tempdb = db["violence"]
-    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
+    conn = sqlite3.connect(filename,timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, types_of_violence_used FROM reports",conn) 
     x= 0
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         try: 
@@ -462,6 +473,7 @@ def violence():
                 {"report_link":report_link, "types_of_violence_used":str(v)}, ["report_link","types_of_violence_used"]
                 )
         x=x+1
+    db.commit()
     df2 = pd.read_sql_query("SELECT types_of_violence_used, count(report_link) FROM violence GROUP BY types_of_violence_used ORDER BY count(report_link) DESC", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
@@ -475,11 +487,12 @@ def violence():
 @app.route('/countries_of_origin')
 def countries_of_origin():
     filename=update()
-    db = dataset.connect("sqlite:///%s.db"%(filename))
+    db = dataset.connect(filename)
     tempdb = db["countries_of_origin"]
-    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
+    conn = sqlite3.connect(filename,timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, countries_of_origin FROM reports",conn) 
     x= 0
+    db.begin()
     while x < len(df):
         report_link = df["report_link"][x]
         countries = df["countries_of_origin"][x].split(" | ")
@@ -490,6 +503,7 @@ def countries_of_origin():
                 {"report_link":str(report_link), "countries_of_origin":str(country)}, ["report_link","pushback_from"]
                 )
         x=x+1
+    db.commit()
     df2 = pd.read_sql_query("SELECT countries_of_origin, count(report_link) FROM countries_of_origin GROUP BY countries_of_origin ORDER BY count(report_link) DESC", conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)

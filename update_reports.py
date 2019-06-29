@@ -12,9 +12,10 @@ logging.basicConfig(level=logging.INFO)
 @cached(cache)
 def update():
     logging.info("update started")
-    filename = "reports"
+    # filename = "reports"
+    filename  = "mysql+mysqlconnector://gobitodic:subotica@gobitodic.mysql.pythonanywhere-services.com/gobitodic$reports"
     # os.popen('cp reports.db %s.db'%(filename)) 
-    db = dataset.connect('mysql+mysqlconnector://gobitodic:subotica@gobitodic.mysql.pythonanywhere-services.com/gobitodic$reports')
+    db = dataset.connect(filename)
     # db = dataset.connect("sqlite:///%s.db"%(filename))
     reportsdb = db["reports"]
     reportsdb.delete()
