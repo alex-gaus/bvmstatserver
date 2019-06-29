@@ -12,7 +12,7 @@ import dataset
 import time
 import datetime
 from cachetools import cached, TTLCache
-cache= TTLCache(maxsize=1000, ttl=100)
+cache= TTLCache(maxsize=1000, ttl=1000)
 logging.basicConfig(level=logging.INFO)
 
 
