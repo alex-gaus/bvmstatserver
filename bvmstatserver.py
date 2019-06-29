@@ -4,6 +4,8 @@ from flask import Flask
 from flask import make_response
 from update_reports import update
 import pandas as pd
+import MySQLdb
+import pandas.io.sql as psql
 import sqlite3
 import csv
 import os
@@ -32,7 +34,8 @@ def hello_world():
 @app.route('/csv_export')
 def csv_export():
     filename=update()
-    conn = sqlite3.connect(filename,timeout=30.0)
+    # conn = sqlite3.connect(filename,timeout=30.0)
+    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT * FROM reports ORDER BY date", conn)
     csv_data = df.to_csv()
     output = make_response(csv_data)
@@ -51,7 +54,8 @@ def csv_export():
 @app.route('/orgas')
 def orgas():
     filename=update()
-    conn = sqlite3.connect(filename,timeout=30.0)
+    # conn = sqlite3.connect(filename,timeout=30.0)
+    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT incident_author, COUNT(date) FROM reports GROUP BY incident_author", conn)
     csv_data = df.to_csv()
     output = make_response(csv_data)
@@ -67,7 +71,8 @@ def orgas():
 @app.route('/reports')
 def reports():
     filename=update()
-    conn = sqlite3.connect(filename,timeout=30.0)
+    # conn = sqlite3.connect(filename,timeout=30.0)
+    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT SUBSTR(date,0,8) as date_yyyy_mm, count(date) as counter, sum(group_size) as size FROM reports GROUP BY date_yyyy_mm", conn)
     csv_data = df.to_csv()
     logging.info(csv_data)
@@ -85,7 +90,8 @@ def reports():
 @app.route('/underage')
 def underage():
     filename=update()
-    conn = sqlite3.connect(filename,timeout=30.0)
+    # conn = sqlite3.connect(filename,timeout=30.0)
+    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("""
         SELECT 
         a.underage_involved,
@@ -172,7 +178,8 @@ def underage():
 @app.route('/women')
 def women():
     filename=update()
-    conn = sqlite3.connect(filename,timeout=30.0)
+    # conn = sqlite3.connect(filename,timeout=30.0)
+    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("""
         SELECT 
         CASE a.women_involved
@@ -239,7 +246,8 @@ def women():
 @app.route('/asylum')
 def asylum():
     filename=update()
-    conn = sqlite3.connect(filename,timeout=30.0)
+    # conn = sqlite3.connect(filename,timeout=30.0)
+    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("""
         SELECT 
         a.intention_asylum_expressed,
@@ -302,7 +310,8 @@ def pushback_from_counter():
     filename=update()
     db = dataset.connect("sqlite:///%s.db"%(filename))
     tempdb = db["pushback_from_counter"]
-    conn = sqlite3.connect(filename,timeout=30.0)
+    # conn = sqlite3.connect(filename,timeout=30.0)
+    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, pushback_from FROM reports",conn) 
     x= 0
     db.begin()
@@ -332,7 +341,8 @@ def pushback_to_counter():
     filename=update()
     db = dataset.connect(filename)
     tempdb = db["pushback_to_counter"]
-    conn = sqlite3.connect(filename,timeout=30.0)
+    # conn = sqlite3.connect(filename,timeout=30.0)
+    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, pushback_to FROM reports",conn) 
     x= 0
     db.begin()
@@ -362,7 +372,8 @@ def pushback_from_date():
     filename=update()
     db = dataset.connect(filename)
     tempdb = db["pushback_from_date"]
-    conn = sqlite3.connect(filename,timeout=30.0)
+    # conn = sqlite3.connect(filename,timeout=30.0)
+    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, SUBSTR(date,0,8) as date_yyyy_mm, pushback_from FROM reports",conn) 
     x= 0
     db.begin()
@@ -393,7 +404,8 @@ def pushback_to_date():
     filename=update()
     db = dataset.connect(filename)
     tempdb = db["pushback_to_date"]
-    conn = sqlite3.connect(filename,timeout=30.0)
+    # conn = sqlite3.connect(filename,timeout=30.0)
+    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, SUBSTR(date,0,8) as date_yyyy_mm, pushback_to FROM reports",conn) 
     x= 0
     db.begin()
@@ -424,7 +436,8 @@ def chainpushback():
     filename=update()
     db = dataset.connect(filename)
     tempdb = db["chainpushback"]
-    conn = sqlite3.connect(filename,timeout=30.0)
+    # conn = sqlite3.connect(filename,timeout=30.0)
+    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, pushback_to, pushback_from FROM reports",conn) 
     x= 0
     db.begin()
@@ -456,7 +469,8 @@ def violence():
     filename=update()
     db = dataset.connect(filename)
     tempdb = db["violence"]
-    conn = sqlite3.connect(filename,timeout=30.0)
+    # conn = sqlite3.connect(filename,timeout=30.0)
+    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, types_of_violence_used FROM reports",conn) 
     x= 0
     db.begin()
@@ -489,7 +503,8 @@ def countries_of_origin():
     filename=update()
     db = dataset.connect(filename)
     tempdb = db["countries_of_origin"]
-    conn = sqlite3.connect(filename,timeout=30.0)
+    # conn = sqlite3.connect(filename,timeout=30.0)
+    conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT report_link, countries_of_origin FROM reports",conn) 
     x= 0
     db.begin()
