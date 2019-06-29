@@ -32,7 +32,7 @@ def hello_world():
 @app.route('/csv_export')
 def csv_export():
     filename=update()
-    conn = sqlite3.connect("%s.db"%(filename))
+    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
     df = pd.read_sql_query("SELECT * FROM reports ORDER BY date", conn)
     csv_data = df.to_csv()
     output = make_response(csv_data)
@@ -42,7 +42,7 @@ def csv_export():
     output.headers["Content-Disposition"] = "attachment; filename=borderviolence_reports_%s.csv"%(now)
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    # os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename),timeout=30.0)
     return(output)
 
 # orgas:
@@ -51,14 +51,14 @@ def csv_export():
 @app.route('/orgas')
 def orgas():
     filename=update()
-    conn = sqlite3.connect("%s.db"%(filename))
+    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
     df = pd.read_sql_query("SELECT incident_author, COUNT(date) FROM reports GROUP BY incident_author", conn)
     csv_data = df.to_csv()
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=orgas.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    # os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename),timeout=30.0)
     return(output)
 
 # reports
@@ -67,7 +67,7 @@ def orgas():
 @app.route('/reports')
 def reports():
     filename=update()
-    conn = sqlite3.connect("%s.db"%(filename))
+    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
     df = pd.read_sql_query("SELECT SUBSTR(date,0,8) as date_yyyy_mm, count(date) as counter, sum(group_size) as size FROM reports GROUP BY date_yyyy_mm", conn)
     csv_data = df.to_csv()
     logging.info(csv_data)
@@ -75,7 +75,7 @@ def reports():
     output.headers["Content-Disposition"] = "attachment; filename=reports.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    # os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename),timeout=30.0)
     logging.info(output)
     return(output)
 
@@ -85,7 +85,7 @@ def reports():
 @app.route('/underage')
 def underage():
     filename=update()
-    conn = sqlite3.connect("%s.db"%(filename))
+    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
     df = pd.read_sql_query("""
         SELECT 
         a.underage_involved,
@@ -163,7 +163,7 @@ def underage():
     output.headers["Content-Disposition"] = "attachment; filename=underage.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    # os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename),timeout=30.0)
     return(output)
 
 # women
@@ -172,7 +172,7 @@ def underage():
 @app.route('/women')
 def women():
     filename=update()
-    conn = sqlite3.connect("%s.db"%(filename))
+    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
     df = pd.read_sql_query("""
         SELECT 
         CASE a.women_involved
@@ -230,7 +230,7 @@ def women():
     output.headers["Content-Disposition"] = "attachment; filename=women.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    # os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename),timeout=30.0)
     return(output)
 
 # asylum
@@ -239,7 +239,7 @@ def women():
 @app.route('/asylum')
 def asylum():
     filename=update()
-    conn = sqlite3.connect("%s.db"%(filename))
+    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
     df = pd.read_sql_query("""
         SELECT 
         a.intention_asylum_expressed,
@@ -293,7 +293,7 @@ def asylum():
     output.headers["Content-Disposition"] = "attachment; filename=asylum.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    # os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename),timeout=30.0)
     return(output)
 
 @cached(cache)
@@ -302,7 +302,7 @@ def pushback_from_counter():
     filename=update()
     db = dataset.connect("sqlite:///%s.db"%(filename))
     tempdb = db["pushback_from_counter"]
-    conn = sqlite3.connect("%s.db"%(filename))
+    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, pushback_from FROM reports",conn) 
     x= 0
     while x < len(df):
@@ -321,7 +321,7 @@ def pushback_from_counter():
     output.headers["Content-Disposition"] = "attachment; filename=pushback_from_counter.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    # os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename),timeout=30.0)
     return (output)
 
 @cached(cache)
@@ -330,7 +330,7 @@ def pushback_to_counter():
     filename=update()
     db = dataset.connect("sqlite:///%s.db"%(filename))
     tempdb = db["pushback_to_counter"]
-    conn = sqlite3.connect("%s.db"%(filename))
+    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, pushback_to FROM reports",conn) 
     x= 0
     while x < len(df):
@@ -349,7 +349,7 @@ def pushback_to_counter():
     output.headers["Content-Disposition"] = "attachment; filename=pushback_to_counter.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    # os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename),timeout=30.0)
     return (output)
 
 @cached(cache)
@@ -358,7 +358,7 @@ def pushback_from_date():
     filename=update()
     db = dataset.connect("sqlite:///%s.db"%(filename))
     tempdb = db["pushback_from_date"]
-    conn = sqlite3.connect("%s.db"%(filename))
+    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, SUBSTR(date,0,8) as date_yyyy_mm, pushback_from FROM reports",conn) 
     x= 0
     while x < len(df):
@@ -378,7 +378,7 @@ def pushback_from_date():
     output.headers["Content-Disposition"] = "attachment; filename=pushback_from_date.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    # os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename),timeout=30.0)
     return (output)
 
 @cached(cache)
@@ -387,7 +387,7 @@ def pushback_to_date():
     filename=update()
     db = dataset.connect("sqlite:///%s.db"%(filename))
     tempdb = db["pushback_to_date"]
-    conn = sqlite3.connect("%s.db"%(filename))
+    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, SUBSTR(date,0,8) as date_yyyy_mm, pushback_to FROM reports",conn) 
     x= 0
     while x < len(df):
@@ -407,7 +407,7 @@ def pushback_to_date():
     output.headers["Content-Disposition"] = "attachment; filename=pushback_to_date.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    # os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename),timeout=30.0)
     return (output)
 
 @cached(cache)
@@ -416,7 +416,7 @@ def chainpushback():
     filename=update()
     db = dataset.connect("sqlite:///%s.db"%(filename))
     tempdb = db["chainpushback"]
-    conn = sqlite3.connect("%s.db"%(filename))
+    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, pushback_to, pushback_from FROM reports",conn) 
     x= 0
     while x < len(df):
@@ -437,7 +437,7 @@ def chainpushback():
     output.headers["Content-Disposition"] = "attachment; filename=chainpushback.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    # os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename),timeout=30.0)
     return (output)
 
 @cached(cache)
@@ -446,7 +446,7 @@ def violence():
     filename=update()
     db = dataset.connect("sqlite:///%s.db"%(filename))
     tempdb = db["violence"]
-    conn = sqlite3.connect("%s.db"%(filename))
+    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, types_of_violence_used FROM reports",conn) 
     x= 0
     while x < len(df):
@@ -468,7 +468,7 @@ def violence():
     output.headers["Content-Disposition"] = "attachment; filename=violence.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    # os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename),timeout=30.0)
     return (output)
 
 @cached(cache)
@@ -477,7 +477,7 @@ def countries_of_origin():
     filename=update()
     db = dataset.connect("sqlite:///%s.db"%(filename))
     tempdb = db["countries_of_origin"]
-    conn = sqlite3.connect("%s.db"%(filename))
+    conn = sqlite3.connect("%s.db"%(filename),timeout=30.0)
     df = pd.read_sql_query("SELECT report_link, countries_of_origin FROM reports",conn) 
     x= 0
     while x < len(df):
@@ -496,7 +496,7 @@ def countries_of_origin():
     output.headers["Content-Disposition"] = "attachment; filename=countries_of_origin.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
-    # os.remove("%s.db"%(filename))
+    # os.remove("%s.db"%(filename),timeout=30.0)
     return (output)
 
     # To Do:
