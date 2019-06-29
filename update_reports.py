@@ -17,7 +17,6 @@ def update():
     # filename  = "mysql+mysqlconnector://gobitodic:subotica@gobitodic.mysql.pythonanywhere-services.com/gobitodic$reports"
     # os.popen('cp reports.db %s.db'%(filename)) 
     db = dataset.connect(filename)
-    db.close()
     # db = dataset.connect("sqlite:///%s.db"%(filename))
     reportsdb = db["reports"]
     reportsdb.delete()
