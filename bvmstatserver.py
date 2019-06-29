@@ -73,7 +73,7 @@ def reports():
     filename=update()
     # conn = sqlite3.connect(filename,timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
-    df = pd.read_sql_query("SELECT SUBSTR(date,0,8) as date_yyyy_mm, count(date) as counter, sum(group_size) as size FROM reports GROUP BY date_yyyy_mm", conn)
+    df = pd.read_sql_query("SELECT SUBSTRING(date,0,8) as date_yyyy_mm, count(date) as counter, sum(group_size) as size FROM reports GROUP BY date_yyyy_mm", conn)
     csv_data = df.to_csv()
     logging.info(csv_data)
     output = make_response(csv_data)
@@ -99,51 +99,51 @@ def underage():
         FROM 
         (SELECT 
         reports.underage_involved,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
             WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
             WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
             WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by underage_involved, SUBSTR(reports.date,0,5)) as a,
+        Group by underage_involved, SUBSTRING(reports.date,0,5)) as a,
 
         (SELECT 
         reports.underage_involved,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
             WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
             WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
             WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by underage_involved, SUBSTR(reports.date,0,5)) as b,
+        Group by underage_involved, SUBSTRING(reports.date,0,5)) as b,
         (SELECT 
         reports.underage_involved,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
             WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
             WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
             WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by underage_involved, SUBSTR(reports.date,0,5)) as c
+        Group by underage_involved, SUBSTRING(reports.date,0,5)) as c
         WHERE 
         a.underage_involved =b.underage_involved and a.underage_involved = c.underage_involved
         Group by a.underage_involved
     """, conn)
         # SELECT 
         # DISTINCT
-        # SUBSTR(reports.date,0,5) as date_report,
+        # SUBSTRING(reports.date,0,5) as date_report,
         # reports.underage_involved as underage_involved,
         # count(age) as counter,
         # CASE underage_involved
@@ -191,43 +191,43 @@ def women():
         FROM 
         (SELECT 
         reports.women_involved,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by women_involved, SUBSTR(reports.date,0,5)) as a,
+        Group by women_involved, SUBSTRING(reports.date,0,5)) as a,
         (SELECT 
         reports.women_involved,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by women_involved, SUBSTR(reports.date,0,5)) as b,
+        Group by women_involved, SUBSTRING(reports.date,0,5)) as b,
         (SELECT 
         reports.women_involved,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by women_involved, SUBSTR(reports.date,0,5)) as c
+        Group by women_involved, SUBSTRING(reports.date,0,5)) as c
         WHERE 
         a.women_involved =b.women_involved and a.women_involved = c.women_involved
         Group by women_involved_c
@@ -255,43 +255,43 @@ def asylum():
         FROM 
         (SELECT 
         reports.intention_asylum_expressed,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by intention_asylum_expressed, SUBSTR(reports.date,0,5)) as a,
+        Group by intention_asylum_expressed, SUBSTRING(reports.date,0,5)) as a,
         (SELECT 
         reports.intention_asylum_expressed,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by intention_asylum_expressed, SUBSTR(reports.date,0,5)) as b,
+        Group by intention_asylum_expressed, SUBSTRING(reports.date,0,5)) as b,
         (SELECT 
         reports.intention_asylum_expressed,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTR(reports.date,0,5)
+        CASE SUBSTRING(reports.date,0,5)
         WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by intention_asylum_expressed, SUBSTR(reports.date,0,5)) as c
+        Group by intention_asylum_expressed, SUBSTRING(reports.date,0,5)) as c
         WHERE 
         a.intention_asylum_expressed =b.intention_asylum_expressed and a.intention_asylum_expressed = c.intention_asylum_expressed
         Group by a.intention_asylum_expressed
@@ -376,7 +376,7 @@ def pushback_from_date():
     tempdb = db["pushback_from_date"]
     # conn = sqlite3.connect(filename,timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
-    df = pd.read_sql_query("SELECT report_link, SUBSTR(date,0,8) as date_yyyy_mm, pushback_from FROM reports",conn) 
+    df = pd.read_sql_query("SELECT report_link, SUBSTRING(date,0,8) as date_yyyy_mm, pushback_from FROM reports",conn) 
     x= 0
     tempdb.delete()
     db.begin()
@@ -409,7 +409,7 @@ def pushback_to_date():
     tempdb = db["pushback_to_date"]
     # conn = sqlite3.connect(filename,timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
-    df = pd.read_sql_query("SELECT report_link, SUBSTR(date,0,8) as date_yyyy_mm, pushback_to FROM reports",conn) 
+    df = pd.read_sql_query("SELECT report_link, SUBSTRING(date,0,8) as date_yyyy_mm, pushback_to FROM reports",conn) 
     x= 0
     tempdb.delete()
     db.begin()
