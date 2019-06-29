@@ -14,8 +14,8 @@ logging.basicConfig(level=logging.INFO)
 def update():
     gc.collect()
     logging.info("update started")
-    filename = "sqlite:///:reports.db"
-    # filename  = "mysql+mysqlconnector://gobitodic:subotica@gobitodic.mysql.pythonanywhere-services.com/gobitodic$reports"
+    # filename = "sqlite:///:reports.db"
+    filename  = "mysql+mysqlconnector://gobitodic:subotica@gobitodic.mysql.pythonanywhere-services.com/gobitodic$reports"
     # os.popen('cp reports.db %s.db'%(filename)) 
     db = dataset.connect(filename)
     # db = dataset.connect("sqlite:///%s.db"%(filename))
