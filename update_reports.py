@@ -21,6 +21,6 @@ def update():
     reports = get_reports()
     db.begin()
     for report in reports:
-        reportsdb.update(report)
+        reportsdb.insert(report)
     db.commit()
     return filename
