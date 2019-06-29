@@ -308,6 +308,7 @@ def asylum():
 @cached(cache)
 @app.route('/pushback_from_counter')
 def pushback_from_counter():
+    gc.collect()
     filename=update()
     db = dataset.connect("sqlite:///%s.db"%(filename))
     tempdb = db["pushback_from_counter"]
@@ -338,12 +339,12 @@ def pushback_from_counter():
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
     del db
-    gc.collect()
     return (output)
 
 @cached(cache)
 @app.route('/pushback_to_counter')
 def pushback_to_counter():
+    gc.collect()
     filename=update()
     db = dataset.connect(filename)
     tempdb = db["pushback_to_counter"]
@@ -374,12 +375,12 @@ def pushback_to_counter():
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
     del db
-    gc.collect()
     return (output)
 
 @cached(cache)
 @app.route('/pushback_from_date')
 def pushback_from_date():
+    gc.collect()
     filename=update()
     db = dataset.connect(filename)
     tempdb = db["pushback_from_date"]
@@ -411,12 +412,12 @@ def pushback_from_date():
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
     del db
-    gc.collect()
     return (output)
 
 @cached(cache)
 @app.route('/pushback_to_date')
 def pushback_to_date():
+    gc.collect()
     filename=update()
     db = dataset.connect(filename)
     tempdb = db["pushback_to_date"]
@@ -448,7 +449,6 @@ def pushback_to_date():
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
     del db
-    gc.collect()
     return (output)
 
 @cached(cache)
@@ -486,12 +486,12 @@ def chainpushback():
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
     del db
-    gc.collect()
     return (output)
 
 @cached(cache)
 @app.route('/violence')
 def violence():
+    gc.collect()
     filename=update()
     db = dataset.connect(filename)
     tempdb = db["violence"]
@@ -525,12 +525,12 @@ def violence():
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
     del db
-    gc.collect()
     return (output)
 
 @cached(cache)
 @app.route('/countries_of_origin')
 def countries_of_origin():
+    gc.collect()
     filename=update()
     db = dataset.connect(filename)
     tempdb = db["countries_of_origin"]
@@ -561,7 +561,6 @@ def countries_of_origin():
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
     del db
-    gc.collect()
     return (output)
 
     # To Do:
