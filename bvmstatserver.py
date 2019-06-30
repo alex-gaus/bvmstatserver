@@ -118,6 +118,8 @@ def underage():
         tempdb.insert(row)
     tempdb.drop_column('id')    
     db.commit()
+    conn.close()
+    conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df2 = pd.read_sql_query("SELECT * from underage",conn)
     csv_data = df2.to_csv()
     output = make_response(csv_data)
