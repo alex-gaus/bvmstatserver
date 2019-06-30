@@ -326,8 +326,9 @@ def pushback_from_date():
     conn.close()
     conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df2 = pd.read_sql_query("SELECT date_yyyy_mm, pushback_from, count(report_link) FROM pushback_from_date GROUP BY date_yyyy_mm, pushback_from ORDER BY date_yyyy_mm", conn)
-    df3 = df2.reset_index().transpose()
+    df3 = df2.transpose()
     csv_data = df3.to_csv()
+    csv_data[csv_data.find('\n')+2:]
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=pushback_from_date.csv"
     output.headers["Content-type"] = "text/csv"
@@ -364,9 +365,9 @@ def pushback_to_date():
     conn.close()
     conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df2 = pd.read_sql_query("SELECT date_yyyy_mm, pushback_to, count(report_link) FROM pushback_to_date GROUP BY date_yyyy_mm, pushback_to ORDER BY date_yyyy_mm", conn)
-    df3 = df2.reset_index().transpose()
+    df3 = df2.transpose()
     csv_data = df3.to_csv()
-    df3.drop([0, 0])
+    csv_data[csv_data.find('\n')+2:]
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=pushback_to_date.csv"
     output.headers["Content-type"] = "text/csv"
