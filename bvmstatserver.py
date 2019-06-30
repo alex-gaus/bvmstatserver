@@ -140,16 +140,23 @@ def women():
     # conn = sqlite3.connect("reports.db",timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT women_involved, SUBSTR(date,1,4) as year, count(id) as counter from reports GROUP BY year, women_involved ORDER BY women_involved",conn)
-    women_involved = df["women_involved"][0]
+    if df["women_involved"][0] == None:
+        women_involved = "unknown"
+    else:
+        women_involved = df["women_involved"][0]
     templist = []
     templist.append({"women_involved":women_involved,df["year"][0]:str(df["counter"][0])})
     x = 1
     y = 0
     while x < len(df):
-        if women_involved == df["women_involved"][x]:
+        if df["women_involved"][0] == None:
+            women_involved2 = "unknown"
+        else:
+         women_involved2 = df["women_involved"][x]
+        if women_involved == women_involved2:
             templist[y][df["year"][x]] =str(df["counter"][x])
         else :
-            women_involved = df["women_involved"][x]
+            women_involved = women_involved2
             templist.append({"women_involved":women_involved,df["year"][x]:str(df["counter"][x])})
             y = y+1
         x= x+1
@@ -171,132 +178,112 @@ def women():
     # os.remove("%s.db"%(filename),timeout=30.0)
     return(output)
     
-#     filename=update()
-#     # conn = sqlite3.connect(filename,timeout=30.0)
-#     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
-#     df = pd.read_sql_query("""
-#         SELECT 
-#         CASE a.women_involved
-#         WHEN "yes" THEN "yes"
-#         WHEN "no" THEN "no"
-#         ELSE "unknown"
-#         END as women_involved_c,
-#         b.year_2017,c.year_2018, a.year_2019
-#         FROM 
-#         (SELECT 
-#         reports.women_involved,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2017" THEN count(age)
-#         END as year_2017,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2018" THEN  count(age)
-#         END as year_2018,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2019" THEN count(age)
-#         END as year_2019
-#         from reports
-#         Group by women_involved, SUBSTRING(reports.date,1,6)) as a,
-#         (SELECT 
-#         reports.women_involved,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2017" THEN count(age)
-#         END as year_2017,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2018" THEN  count(age)
-#         END as year_2018,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2019" THEN count(age)
-#         END as year_2019
-#         from reports
-#         Group by women_involved, SUBSTRING(reports.date,1,6)) as b,
-#         (SELECT 
-#         reports.women_involved,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2017" THEN count(age)
-#         END as year_2017,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2018" THEN  count(age)
-#         END as year_2018,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2019" THEN count(age)
-#         END as year_2019
-#         from reports
-#         Group by women_involved, SUBSTRING(reports.date,1,6)) as c
-#         WHERE 
-#         a.women_involved =b.women_involved and a.women_involved = c.women_involved
-#         Group by women_involved_c
-#    """,conn)
-#     csv_data = df.to_csv()
-#     output = make_response(csv_data)
-#     output.headers["Content-Disposition"] = "attachment; filename=women.csv"
-#     output.headers["Content-type"] = "text/csv"
-#     conn.close()
-#     # os.remove("%s.db"%(filename),timeout=30.0)
-#     return(output)
-
 # asylum
 # Shows for how many pushbacks the request to ask for asylum was denied
 @cached(cache)
 @app.route('/asylum')
 def asylum():
     filename=update()
-    # conn = sqlite3.connect(filename,timeout=30.0)
+    db = dataset.connect(filename)
+    # conn = sqlite3.connect("reports.db",timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
-    df = pd.read_sql_query("""
-        SELECT 
-        a.intention_asylum_expressed,
-        b.year_2017,c.year_2018, a.year_2019
-        FROM 
-        (SELECT 
-        reports.intention_asylum_expressed,
-        CASE SUBSTRING(reports.date,1,6)
-        WHEN "2017" THEN count(age)
-        END as year_2017,
-        CASE SUBSTRING(reports.date,1,6)
-        WHEN "2018" THEN  count(age)
-        END as year_2018,
-        CASE SUBSTRING(reports.date,1,6)
-        WHEN "2019" THEN count(age)
-        END as year_2019
-        from reports
-        Group by intention_asylum_expressed, SUBSTRING(reports.date,1,6)) as a,
-        (SELECT 
-        reports.intention_asylum_expressed,
-        CASE SUBSTRING(reports.date,1,6)
-        WHEN "2017" THEN count(age)
-        END as year_2017,
-        CASE SUBSTRING(reports.date,1,6)
-        WHEN "2018" THEN  count(age)
-        END as year_2018,
-        CASE SUBSTRING(reports.date,1,6)
-        WHEN "2019" THEN count(age)
-        END as year_2019
-        from reports
-        Group by intention_asylum_expressed, SUBSTRING(reports.date,1,6)) as b,
-        (SELECT 
-        reports.intention_asylum_expressed,
-        CASE SUBSTRING(reports.date,1,6)
-        WHEN "2017" THEN count(age)
-        END as year_2017,
-        CASE SUBSTRING(reports.date,1,6)
-        WHEN "2018" THEN  count(age)
-        END as year_2018,
-        CASE SUBSTRING(reports.date,1,6)
-        WHEN "2019" THEN count(age)
-        END as year_2019
-        from reports
-        Group by intention_asylum_expressed, SUBSTRING(reports.date,1,6)) as c
-        WHERE 
-        a.intention_asylum_expressed =b.intention_asylum_expressed and a.intention_asylum_expressed = c.intention_asylum_expressed
-        Group by a.intention_asylum_expressed
-   """,conn)
-    csv_data = df.to_csv()
+    df = pd.read_sql_query("SELECT intention_asylum_expressed, SUBSTR(date,1,4) as year, count(id) as counter from reports GROUP BY year, intention_asylum_expressed ORDER BY intention_asylum_expressed",conn)
+    if df["intention_asylum_expressed"][0] == None:
+        intention_asylum_expressed = "unknown"
+    else:
+        intention_asylum_expressed = df["intention_asylum_expressed"][0]
+    templist = []
+    templist.append({"intention_asylum_expressed":intention_asylum_expressed,df["year"][0]:str(df["counter"][0])})
+    x = 1
+    y = 0
+    while x < len(df):
+        if df["intention_asylum_expressed"][0] == None:
+            intention_asylum_expressed2 = "unknown"
+        else:
+         intention_asylum_expressed2 = df["intention_asylum_expressed"][x]
+        if intention_asylum_expressed == intention_asylum_expressed2:
+            templist[y][df["year"][x]] =str(df["counter"][x])
+        else :
+            intention_asylum_expressed = intention_asylum_expressed2
+            templist.append({"intention_asylum_expressed":intention_asylum_expressed,df["year"][x]:str(df["counter"][x])})
+            y = y+1
+        x= x+1
+    tempdb = db["intention_asylum_expressed"]
+    tempdb.delete()
+    db.begin()
+    for row in templist:
+        tempdb.insert(row)
+    tempdb.drop_column('id')    
+    db.commit()
+    conn.close()
+    conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
+    df2 = pd.read_sql_query("SELECT * from intention_asylum_expressed",conn)
+    csv_data = df2.to_csv()
     output = make_response(csv_data)
-    output.headers["Content-Disposition"] = "attachment; filename=asylum.csv"
+    output.headers["Content-Disposition"] = "attachment; filename=intention_asylum_expressed.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
     return(output)
+
+#     filename=update()
+#     # conn = sqlite3.connect(filename,timeout=30.0)
+#     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
+#     df = pd.read_sql_query("""
+#         SELECT 
+#         a.intention_asylum_expressed,
+#         b.year_2017,c.year_2018, a.year_2019
+#         FROM 
+#         (SELECT 
+#         reports.intention_asylum_expressed,
+#         CASE SUBSTRING(reports.date,1,6)
+#         WHEN "2017" THEN count(age)
+#         END as year_2017,
+#         CASE SUBSTRING(reports.date,1,6)
+#         WHEN "2018" THEN  count(age)
+#         END as year_2018,
+#         CASE SUBSTRING(reports.date,1,6)
+#         WHEN "2019" THEN count(age)
+#         END as year_2019
+#         from reports
+#         Group by intention_asylum_expressed, SUBSTRING(reports.date,1,6)) as a,
+#         (SELECT 
+#         reports.intention_asylum_expressed,
+#         CASE SUBSTRING(reports.date,1,6)
+#         WHEN "2017" THEN count(age)
+#         END as year_2017,
+#         CASE SUBSTRING(reports.date,1,6)
+#         WHEN "2018" THEN  count(age)
+#         END as year_2018,
+#         CASE SUBSTRING(reports.date,1,6)
+#         WHEN "2019" THEN count(age)
+#         END as year_2019
+#         from reports
+#         Group by intention_asylum_expressed, SUBSTRING(reports.date,1,6)) as b,
+#         (SELECT 
+#         reports.intention_asylum_expressed,
+#         CASE SUBSTRING(reports.date,1,6)
+#         WHEN "2017" THEN count(age)
+#         END as year_2017,
+#         CASE SUBSTRING(reports.date,1,6)
+#         WHEN "2018" THEN  count(age)
+#         END as year_2018,
+#         CASE SUBSTRING(reports.date,1,6)
+#         WHEN "2019" THEN count(age)
+#         END as year_2019
+#         from reports
+#         Group by intention_asylum_expressed, SUBSTRING(reports.date,1,6)) as c
+#         WHERE 
+#         a.intention_asylum_expressed =b.intention_asylum_expressed and a.intention_asylum_expressed = c.intention_asylum_expressed
+#         Group by a.intention_asylum_expressed
+#    """,conn)
+#     csv_data = df.to_csv()
+#     output = make_response(csv_data)
+#     output.headers["Content-Disposition"] = "attachment; filename=asylum.csv"
+#     output.headers["Content-type"] = "text/csv"
+#     conn.close()
+#     # os.remove("%s.db"%(filename),timeout=30.0)
+#     return(output)
 
 @cached(cache)
 @app.route('/pushback_from_counter')
