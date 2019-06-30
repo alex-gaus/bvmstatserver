@@ -140,7 +140,7 @@ def women():
     # conn = sqlite3.connect("reports.db",timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT women_involved, SUBSTR(date,1,4) as year, count(id) as counter from reports GROUP BY year, women_involved ORDER BY women_involved",conn)
-    if df["women_involved"][0] == None:
+    if df["women_involved"][0] == "":
         women_involved = "unknown"
     else:
         women_involved = df["women_involved"][0]
@@ -149,7 +149,7 @@ def women():
     x = 1
     y = 0
     while x < len(df):
-        if df["women_involved"][0] == None:
+        if df["women_involved"][0] == "":
             women_involved2 = "unknown"
         else:
          women_involved2 = df["women_involved"][x]
@@ -188,7 +188,7 @@ def asylum():
     # conn = sqlite3.connect("reports.db",timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df = pd.read_sql_query("SELECT intention_asylum_expressed, SUBSTR(date,1,4) as year, count(id) as counter from reports GROUP BY year, intention_asylum_expressed ORDER BY intention_asylum_expressed",conn)
-    if df["intention_asylum_expressed"][0] == None:
+    if df["intention_asylum_expressed"][0] == "":
         intention_asylum_expressed = "unknown"
     else:
         intention_asylum_expressed = df["intention_asylum_expressed"][0]
@@ -197,7 +197,7 @@ def asylum():
     x = 1
     y = 0
     while x < len(df):
-        if df["intention_asylum_expressed"][0] == None:
+        if df["intention_asylum_expressed"][0] == "":
             intention_asylum_expressed2 = "unknown"
         else:
          intention_asylum_expressed2 = df["intention_asylum_expressed"][x]
@@ -225,65 +225,6 @@ def asylum():
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
     return(output)
-
-#     filename=update()
-#     # conn = sqlite3.connect(filename,timeout=30.0)
-#     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
-#     df = pd.read_sql_query("""
-#         SELECT 
-#         a.intention_asylum_expressed,
-#         b.year_2017,c.year_2018, a.year_2019
-#         FROM 
-#         (SELECT 
-#         reports.intention_asylum_expressed,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2017" THEN count(age)
-#         END as year_2017,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2018" THEN  count(age)
-#         END as year_2018,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2019" THEN count(age)
-#         END as year_2019
-#         from reports
-#         Group by intention_asylum_expressed, SUBSTRING(reports.date,1,6)) as a,
-#         (SELECT 
-#         reports.intention_asylum_expressed,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2017" THEN count(age)
-#         END as year_2017,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2018" THEN  count(age)
-#         END as year_2018,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2019" THEN count(age)
-#         END as year_2019
-#         from reports
-#         Group by intention_asylum_expressed, SUBSTRING(reports.date,1,6)) as b,
-#         (SELECT 
-#         reports.intention_asylum_expressed,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2017" THEN count(age)
-#         END as year_2017,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2018" THEN  count(age)
-#         END as year_2018,
-#         CASE SUBSTRING(reports.date,1,6)
-#         WHEN "2019" THEN count(age)
-#         END as year_2019
-#         from reports
-#         Group by intention_asylum_expressed, SUBSTRING(reports.date,1,6)) as c
-#         WHERE 
-#         a.intention_asylum_expressed =b.intention_asylum_expressed and a.intention_asylum_expressed = c.intention_asylum_expressed
-#         Group by a.intention_asylum_expressed
-#    """,conn)
-#     csv_data = df.to_csv()
-#     output = make_response(csv_data)
-#     output.headers["Content-Disposition"] = "attachment; filename=asylum.csv"
-#     output.headers["Content-type"] = "text/csv"
-#     conn.close()
-#     # os.remove("%s.db"%(filename),timeout=30.0)
-#     return(output)
 
 @cached(cache)
 @app.route('/pushback_from_counter')
@@ -385,7 +326,8 @@ def pushback_from_date():
     conn.close()
     conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df2 = pd.read_sql_query("SELECT date_yyyy_mm, pushback_from, count(report_link) FROM pushback_from_date GROUP BY date_yyyy_mm, pushback_from ORDER BY date_yyyy_mm", conn)
-    csv_data = df2.to_csv()
+    df3 = df2.pygame.transpose()
+    csv_data = df3.to_csv()
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=pushback_from_date.csv"
     output.headers["Content-type"] = "text/csv"
