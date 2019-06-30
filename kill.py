@@ -21,7 +21,7 @@ def killer():
         kill_id = str(df["Id"][x])
         command = df["Command"][x]
         time = int(df["Time"][x])
-        if time > 50 and command == "Sleep":
+        if time > 20 and command == "Sleep":
             try:
                 try:
                     connection = mysql.connector.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
