@@ -10,7 +10,7 @@ def killer():
     while x < len(df):
         kill_id = str(df["Id"][x])
         command = df["Command"][x]
-        time = str(df["Time"][x])
+        time = int(df["Time"][x])
         if time > 50 or command == "Sleep":
             try:
                 pd.read_sql_query("Kill %s"%(kill_id))
