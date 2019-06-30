@@ -10,21 +10,24 @@ from cachetools import cached, TTLCache
 cache= TTLCache(maxsize=1000, ttl=1000)
 logging.basicConfig(level=logging.INFO)
 
-@cached(cache)
+# @cached(cache)
 def update():
-    gc.collect()
-    logging.info("update started")
-    # filename = "sqlite:///reports.db"
-    filename  = "mysql+mysqlconnector://gobitodic:subotica@gobitodic.mysql.pythonanywhere-services.com/gobitodic$reports"
-    # os.popen('cp reports.db %s.db'%(filename)) 
-    db = dataset.connect(filename)
-    # db = dataset.connect("sqlite:///%s.db"%(filename))
-    reportsdb = db["reports"]
-    reportsdb.delete()
-    reports = get_reports()
-    for report in reports:
-        reportsdb.insert(report)
-    db.commit()
-    db.engine.dispose()
-    del db
+    try:
+        logging.info("update started")
+        filename = "%s.db"%(str(random.randint(1,999999999999999)))
+        logging.info("Created new db %s"%(filename))
+        # filename = "sqlite:///reports.db"
+        # filename  = "mysql+mysqlconnector://gobitodic:subotica@gobitodic.mysql.pythonanywhere-services.com/gobitodic$reports"
+        db = dataset.connect("sqlite:///%s"%(filename))
+        reportsdb = db["reports"]
+        db.begin()
+        reports = get_reports()
+        for report in reports:
+            reportsdb.insert(report)
+        db.commit()
+        db.engine.dispose()
+        logging.info("DB updated")
+    except Exception as e:
+        logging.error("Update() didnt' work; Error: %s"%(e))
+        os.remove(filename)
     return filename
