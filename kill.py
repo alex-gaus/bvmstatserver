@@ -35,6 +35,9 @@ def killer():
             except:
                 logging.info("Couldn't kill process %s"%(kill_id))
         x = x+1
-        connection.close()
+        try:   
+            connection.close()
+        except:
+            logging.info("connection could not be closed")
 
 
