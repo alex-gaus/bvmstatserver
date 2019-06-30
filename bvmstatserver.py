@@ -3,6 +3,7 @@
 from flask import Flask
 from flask import make_response
 from update_reports import update
+from kill import killer
 import pandas as pd
 try:
     import MySQLdb
@@ -32,11 +33,13 @@ app.config['debug'] = False
 @cached(cache)
 @app.route('/')
 def hello_world():
+    kill()
     return 'Server is running!'
 
 @cached(cache)
 @app.route('/csv_export')
 def csv_export():
+    kill()
     filename=update()
     # conn = sqlite3.connect(filename,timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
@@ -57,6 +60,7 @@ def csv_export():
 @cached(cache)
 @app.route('/orgas')
 def orgas():
+    kill()
     filename=update()
     # conn = sqlite3.connect(filename,timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
@@ -74,6 +78,7 @@ def orgas():
 @cached(cache)
 @app.route('/reports')
 def reports():
+    kill()
     filename=update()
     # conn = sqlite3.connect(filename,timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
@@ -93,6 +98,7 @@ def reports():
 @cached(cache)
 @app.route('/underage')
 def underage():
+    kill()
     filename=update()
     db = dataset.connect(filename)
     # conn = sqlite3.connect("reports.db",timeout=30.0)
@@ -136,6 +142,7 @@ def underage():
 @cached(cache)
 @app.route('/women')
 def women():
+    kill()
     filename=update()
     db = dataset.connect(filename)
     # conn = sqlite3.connect("reports.db",timeout=30.0)
@@ -185,6 +192,7 @@ def women():
 @cached(cache)
 @app.route('/asylum')
 def asylum():
+    kill()
     filename=update()
     db = dataset.connect(filename)
     # conn = sqlite3.connect("reports.db",timeout=30.0)
@@ -232,6 +240,7 @@ def asylum():
 @cached(cache)
 @app.route('/pushback_from_counter')
 def pushback_from_counter():
+    kill()
     gc.collect()
     filename=update()
     db = dataset.connect(filename)
@@ -269,6 +278,7 @@ def pushback_from_counter():
 @cached(cache)
 @app.route('/pushback_to_counter')
 def pushback_to_counter():
+    kill()
     gc.collect()
     filename=update()
     db = dataset.connect(filename)
@@ -306,6 +316,7 @@ def pushback_to_counter():
 @cached(cache)
 @app.route('/pushback_from_date')
 def pushback_from_date():
+    kill()
     gc.collect()
     filename=update()
     db = dataset.connect(filename)
@@ -345,6 +356,7 @@ def pushback_from_date():
 @cached(cache)
 @app.route('/pushback_to_date')
 def pushback_to_date():
+    kill()
     gc.collect()
     filename=update()
     db = dataset.connect(filename)
@@ -385,6 +397,7 @@ def pushback_to_date():
 @cached(cache)
 @app.route('/chainpushback')
 def chainpushback():
+    kill()
     filename=update()
     db = dataset.connect(filename)
     tempdb = db["chainpushback"]
@@ -423,6 +436,7 @@ def chainpushback():
 @cached(cache)
 @app.route('/violence')
 def violence():
+    kill()
     gc.collect()
     filename=update()
     db = dataset.connect(filename)
@@ -463,6 +477,7 @@ def violence():
 @cached(cache)
 @app.route('/countries_of_origin')
 def countries_of_origin():
+    kill()
     gc.collect()
     filename=update()
     db = dataset.connect(filename)
