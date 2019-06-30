@@ -25,5 +25,6 @@ def update():
     for report in reports:
         reportsdb.insert(report)
     db.commit()
+    db.engine.dispose()
     del db
     return filename
