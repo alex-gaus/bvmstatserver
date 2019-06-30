@@ -126,6 +126,7 @@ def underage():
     output.headers["Content-Disposition"] = "attachment; filename=underage.csv"
     output.headers["Content-type"] = "text/csv"
     conn.close()
+    db.engine.dispose()
     # os.remove("%s.db"%(filename),timeout=30.0)
     return(output)
     
@@ -176,6 +177,7 @@ def women():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    db.engine.dispose()
     return(output)
     
 # asylum
@@ -224,6 +226,7 @@ def asylum():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    db.engine.dispose()
     return(output)
 
 @cached(cache)
@@ -259,6 +262,7 @@ def pushback_from_counter():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    db.engine.dispose()
     del db
     return (output)
 
@@ -295,6 +299,7 @@ def pushback_to_counter():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    db.engine.dispose()
     del db
     return (output)
 
@@ -333,6 +338,7 @@ def pushback_from_date():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    db.engine.dispose()
     del db
     return (output)
 
@@ -372,6 +378,7 @@ def pushback_to_date():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    db.engine.dispose()
     del db
     return (output)
 
@@ -409,6 +416,7 @@ def chainpushback():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    db.engine.dispose()
     del db
     return (output)
 
@@ -448,6 +456,7 @@ def violence():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    db.engine.dispose()
     del db
     return (output)
 
@@ -484,6 +493,7 @@ def countries_of_origin():
     output.headers["Content-type"] = "text/csv"
     conn.close()
     # os.remove("%s.db"%(filename),timeout=30.0)
+    db.engine.dispose()
     del db
     return (output)
 
