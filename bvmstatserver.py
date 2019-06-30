@@ -326,7 +326,7 @@ def pushback_from_date():
     conn.close()
     conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df2 = pd.read_sql_query("SELECT date_yyyy_mm, pushback_from, count(report_link) FROM pushback_from_date GROUP BY date_yyyy_mm, pushback_from ORDER BY date_yyyy_mm", conn)
-    df3 = df2.pygame.transpose()
+    df3 = df2.transpose()
     csv_data = df3.to_csv()
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=pushback_from_date.csv"
