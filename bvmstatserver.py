@@ -4,7 +4,10 @@ from flask import Flask
 from flask import make_response
 from update_reports import update
 import pandas as pd
-import MySQLdb
+try:
+    import MySQLdb
+except:
+    print("problem importing MYSQLdb")
 import pandas.io.sql as psql
 import sqlite3
 import csv
@@ -91,60 +94,110 @@ def reports():
 @app.route('/underage')
 def underage():
     filename=update()
-    # conn = sqlite3.connect(filename,timeout=30.0)
+    db = dataset.connect(filename)
+    # conn = sqlite3.connect("reports.db",timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
-    df = pd.read_sql_query("""
-        SELECT 
-        a.underage_involved,
-        b.year_2017,c.year_2018, a.year_2019
-        FROM 
-        (SELECT 
-        reports.underage_involved,
-        CASE SUBSTRING(reports.date,0,5)
-            WHEN "2017" THEN count(age)
-        END as year_2017,
-        CASE SUBSTRING(reports.date,0,5)
-            WHEN "2018" THEN  count(age)
-        END as year_2018,
-        CASE SUBSTRING(reports.date,0,5)
-            WHEN "2019" THEN count(age)
-        END as year_2019
-        from reports
-        Group by underage_involved, SUBSTRING(reports.date,0,5)) as a,
+    df = pd.read_sql_query("SELECT underage_involved, SUBSTR(date,1,4) as year, count(id) as counter from reports GROUP BY year, underage_involved ORDER BY underage_involved",conn)
+    underage_involved = df["underage_involved"][0]
+    templist = []
+    templist.append({"underage_involved":underage_involved,df["year"][0]:str(df["counter"][0])})
+    x = 1
+    y = 0
+    while x < len(df):
+        if underage_involved == df["underage_involved"][x]:
+            templist[y][df["year"][x]] =str(df["counter"][x])
+        else :
+            underage_involved = df["underage_involved"][x]
+            templist.append({"underage_involved":underage_involved,df["year"][x]:str(df["counter"][x])})
+            y = y+1
+        x= x+1
+    tempdb = db["underage"]
+    tempdb.delete()
+    db.begin()
+    for row in templist:
+        tempdb.insert(row)
+    tempdb.drop_column('id')    
+    db.commit()
+    df2 = pd.read_sql_query("SELECT * from underage",conn)
+    csv_data = df2.to_csv()
+    output = make_response(csv_data)
+    output.headers["Content-Disposition"] = "attachment; filename=underage.csv"
+    output.headers["Content-type"] = "text/csv"
+    conn.close()
+    # os.remove("%s.db"%(filename),timeout=30.0)
+    return(output)
+    
 
-        (SELECT 
-        reports.underage_involved,
-        CASE SUBSTRING(reports.date,0,5)
-            WHEN "2017" THEN count(age)
-        END as year_2017,
-        CASE SUBSTRING(reports.date,0,5)
-            WHEN "2018" THEN  count(age)
-        END as year_2018,
-        CASE SUBSTRING(reports.date,0,5)
-            WHEN "2019" THEN count(age)
-        END as year_2019
-        from reports
-        Group by underage_involved, SUBSTRING(reports.date,0,5)) as b,
-        (SELECT 
-        reports.underage_involved,
-        CASE SUBSTRING(reports.date,0,5)
-            WHEN "2017" THEN count(age)
-        END as year_2017,
-        CASE SUBSTRING(reports.date,0,5)
-            WHEN "2018" THEN  count(age)
-        END as year_2018,
-        CASE SUBSTRING(reports.date,0,5)
-            WHEN "2019" THEN count(age)
-        END as year_2019
-        from reports
-        Group by underage_involved, SUBSTRING(reports.date,0,5)) as c
-        WHERE 
-        a.underage_involved =b.underage_involved and a.underage_involved = c.underage_involved
-        Group by a.underage_involved
-    """, conn)
+            
+ 
+        
+
+    # templist=[{"underage_involved":"no"},{"underage_involved":"unknown"},{"underage_involved":"yes"}]
+    # x=0
+    # while x < len(df):
+    #     dfy = pd.read_sql_query("SELECT underage_involved, COUNT(underage_involved) FROM reports WHERE SUBSTR(date,0,3)=%s GROUP BY underage_involved ORDER BY underage_involved"%(df["year"][x]),conn)
+    #     y=0
+    #     while y < len(dfy):
+    #         templist[x][df["year"][x]] = dfy["COUNT(underage_involved)"][y]
+    #         y =  y+1
+    #     x=x+1
+    # import IPython
+    # IPython.embed()
+
+
+
+        # """
+        # SELECT 
+        # a.underage_involved,
+        # b.year_2017,c.year_2018, a.year_2019
+        # FROM 
+        # (SELECT 
+        # reports.underage_involved,
+        # CASE
+        #     WHEN SUBSTRING(reports.date,1,6) = "2017" THEN count(age)
+        # END as year_2017,
+        # CASE 
+        #     WHEN SUBSTRING(reports.date,1,6) = "2018" THEN  count(age)
+        # END as year_2018,
+        # CASE
+        #     WHEN SUBSTRING(reports.date,1,6) = "2019" THEN count(age)
+        # END as year_2019
+        # from reports
+        # Group by underage_involved, SUBSTRING(reports.date,1,6)) as a,
+
+        # (SELECT 
+        # reports.underage_involved,
+        # CASE 
+        #     WHEN SUBSTRING(reports.date,1,6) = "2017" THEN count(age)
+        # END as year_2017,
+        # CASE 
+        #     WHEN SUBSTRING(reports.date,1,6) = "2018" THEN  count(age)
+        # END as year_2018,
+        # CASE 
+        #     WHEN SUBSTRING(reports.date,1,6) = "2019" THEN count(age)
+        # END as year_2019
+        # from reports
+        # Group by underage_involved, SUBSTRING(reports.date,1,6)) as b,
+        # (SELECT 
+        # reports.underage_involved,
+        # CASE
+        #     WHEN SUBSTRING(reports.date,1,6) = "2017" THEN count(age)
+        # END as year_2017,
+        # CASE
+        #     WHEN SUBSTRING(reports.date,1,6) = "2018" THEN  count(age)
+        # END as year_2018,
+        # CASE 
+        #     WHEN SUBSTRING(reports.date,1,6) = "2019" THEN count(age)
+        # END as year_2019
+        # from reports
+        # Group by underage_involved, SUBSTRING(reports.date,1,6)) as c
+        # WHERE 
+        # a.underage_involved =b.underage_involved and a.underage_involved = c.underage_involved
+        # Group by a.underage_involved
+    # """, conn)
         # SELECT 
         # DISTINCT
-        # SUBSTRING(reports.date,0,5) as date_report,
+        # SUBSTRING(reports.date,1,6) as date_report,
         # reports.underage_involved as underage_involved,
         # count(age) as counter,
         # CASE underage_involved
@@ -164,14 +217,6 @@ def underage():
         # END as unknown
         # from reports
         # Group by reports.underage_involved, date_report
-    
-    csv_data = df.to_csv()
-    output = make_response(csv_data)
-    output.headers["Content-Disposition"] = "attachment; filename=underage.csv"
-    output.headers["Content-type"] = "text/csv"
-    conn.close()
-    # os.remove("%s.db"%(filename),timeout=30.0)
-    return(output)
 
 # women
 # Shows how many pushbacks involed women
@@ -192,43 +237,43 @@ def women():
         FROM 
         (SELECT 
         reports.women_involved,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by women_involved, SUBSTRING(reports.date,0,5)) as a,
+        Group by women_involved, SUBSTRING(reports.date,1,6)) as a,
         (SELECT 
         reports.women_involved,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by women_involved, SUBSTRING(reports.date,0,5)) as b,
+        Group by women_involved, SUBSTRING(reports.date,1,6)) as b,
         (SELECT 
         reports.women_involved,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by women_involved, SUBSTRING(reports.date,0,5)) as c
+        Group by women_involved, SUBSTRING(reports.date,1,6)) as c
         WHERE 
         a.women_involved =b.women_involved and a.women_involved = c.women_involved
         Group by women_involved_c
@@ -256,43 +301,43 @@ def asylum():
         FROM 
         (SELECT 
         reports.intention_asylum_expressed,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by intention_asylum_expressed, SUBSTRING(reports.date,0,5)) as a,
+        Group by intention_asylum_expressed, SUBSTRING(reports.date,1,6)) as a,
         (SELECT 
         reports.intention_asylum_expressed,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by intention_asylum_expressed, SUBSTRING(reports.date,0,5)) as b,
+        Group by intention_asylum_expressed, SUBSTRING(reports.date,1,6)) as b,
         (SELECT 
         reports.intention_asylum_expressed,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2017" THEN count(age)
         END as year_2017,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2018" THEN  count(age)
         END as year_2018,
-        CASE SUBSTRING(reports.date,0,5)
+        CASE SUBSTRING(reports.date,1,6)
         WHEN "2019" THEN count(age)
         END as year_2019
         from reports
-        Group by intention_asylum_expressed, SUBSTRING(reports.date,0,5)) as c
+        Group by intention_asylum_expressed, SUBSTRING(reports.date,1,6)) as c
         WHERE 
         a.intention_asylum_expressed =b.intention_asylum_expressed and a.intention_asylum_expressed = c.intention_asylum_expressed
         Group by a.intention_asylum_expressed
@@ -310,7 +355,7 @@ def asylum():
 def pushback_from_counter():
     gc.collect()
     filename=update()
-    db = dataset.connect("sqlite:///%s.db"%(filename))
+    db = dataset.connect(filename)
     tempdb = db["pushback_from_counter"]
     # conn = sqlite3.connect(filename,timeout=30.0)
     conn =MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
