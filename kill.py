@@ -17,6 +17,5 @@ def killer():
                 logging.info("Process %s killed!"%(kill_id))
             except:
                 logging.info("Couldn't kill process %s"%(kill_id))
-        
-
+        x = x+1
 
