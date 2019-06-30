@@ -328,6 +328,7 @@ def pushback_from_date():
     df2 = pd.read_sql_query("SELECT date_yyyy_mm, pushback_from, count(report_link) FROM pushback_from_date GROUP BY date_yyyy_mm, pushback_from ORDER BY date_yyyy_mm", conn)
     df3 = df2.transpose()
     csv_data = df3.to_csv()
+    df3.drop(df.index[0])
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=pushback_from_date.csv"
     output.headers["Content-type"] = "text/csv"
@@ -357,14 +358,16 @@ def pushback_to_date():
             if country == "":
                 country = "Unknown"
             tempdb.insert(
-                {"date_yyyy_mm": date_yyyy_mm, "report_link":report_link, "pushback_to":str(country)}, ["report_link","pushback_from"]
+                {"date_yyyy_mm": date_yyyy_mm, "report_link":str(report_link), "pushback_to":str(country)}, ["report_link","pushback_to"]
                 )
         x=x+1
     db.commit()
     conn.close()
     conn = MySQLdb.connect(host="gobitodic.mysql.pythonanywhere-services.com", user="gobitodic", passwd="subotica", db="gobitodic$reports")
     df2 = pd.read_sql_query("SELECT date_yyyy_mm, pushback_to, count(report_link) FROM pushback_to_date GROUP BY date_yyyy_mm, pushback_to ORDER BY date_yyyy_mm", conn)
-    csv_data = df2.to_csv()
+    df3 = df2.transpose()
+    csv_data = df3.to_csv()
+    df3.drop(df.index[0])
     output = make_response(csv_data)
     output.headers["Content-Disposition"] = "attachment; filename=pushback_to_date.csv"
     output.headers["Content-type"] = "text/csv"
