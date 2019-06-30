@@ -13,7 +13,7 @@ def killer():
         time = int(df["Time"][x])
         if time > 50 or command == "Sleep":
             # try:
-            pd.read_sql_query("Kill %s"%(kill_id))
+            pd.read_sql_query("Kill %s"%(kill_id),conn)
             logging.info("Process %s killed!"%(kill_id))
             # except:
             logging.info("Couldn't kill process %s"%(kill_id))
