@@ -472,7 +472,7 @@ def violence():
         conn = sqlite3.connect(filename,timeout=30.0)
         tempdb = db["violence"]
         df = pd.read_sql_query("SELECT report_link, types_of_violence_used FROM reports",conn) 
-        length = float(len(df)*1.00)
+        length = float(len(df)*100.00)
         x= 0
         tempdb.delete()
         db.begin()
@@ -492,7 +492,7 @@ def violence():
         db.commit()
         conn.close()
         conn = sqlite3.connect(filename,timeout=30.0)
-        df2 = pd.read_sql_query("SELECT types_of_violence_used, (CAST (count(report_link) AS DECIMAL(5,1))/%f ) FROM violence GROUP BY types_of_violence_used ORDER BY count(report_link) DESC"%length, conn)
+        df2 = pd.read_sql_query("SELECT types_of_violence_used, (CAST (count(report_link) AS DECIMAL(5,1))/%f ) FROM violence GROUP BY types_of_violence_used ORDER BY count(report_link) DESC LIMIT 15"%length, conn)
         csv_data = df2.to_csv()
         output = make_response(csv_data)
         output.headers["Content-Disposition"] = "attachment; filename=violence.csv"
