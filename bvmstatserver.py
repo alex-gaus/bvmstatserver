@@ -3,6 +3,7 @@
 from flask import Flask
 from flask import make_response
 from flask_cors import CORS
+from flask_caching import Cache
 from update_reports import update
 import pandas as pd
 import sqlite3
@@ -20,17 +21,24 @@ logging.basicConfig(level=logging.INFO)
 # To get server  running:
 # $export FLASK_APP=bvmstatserver.py
 # $flask run
-
+config = {
+    "DEBUG": True,         
+    "CACHE_TYPE": "simple",
+    "CACHE_DEFAULT_TIMEOUT": 3600
+}
 app = Flask(__name__)
 CORS(app)
-app.config['debug'] = False
+app.config.from_mapping(config)
+cache = Cache(app)
 
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/')
 def hello_world():
     return 'Server is running!'
 
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/csv_export')
 def csv_export():
     try:
@@ -56,6 +64,7 @@ def csv_export():
 # orgas:
 # Shows which organization documented how many reports
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/orgas')
 def orgas():
     try:
@@ -78,6 +87,7 @@ def orgas():
 # reports
 # Shows how many reports were reported by month (+ the group size)
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/reports')
 def reports():
     try:
@@ -100,6 +110,7 @@ def reports():
 # underage
 # Shows how many pushbacks involed minors
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/underage')
 def underage():
     try:
@@ -148,6 +159,7 @@ def underage():
 # women
 # Shows how many pushbacks involed women
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/women')
 def women():
     try:
@@ -205,6 +217,7 @@ def women():
 # asylum
 # Shows for how many pushbacks the request to ask for asylum was denied
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/asylum')
 def asylum():
     try:
@@ -256,6 +269,7 @@ def asylum():
         return(output)
 
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/pushback_from_counter')
 def pushback_from_counter():
     try:
@@ -296,6 +310,7 @@ def pushback_from_counter():
         return(output)
 
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/pushback_to_counter')
 def pushback_to_counter():
     try:
@@ -336,6 +351,7 @@ def pushback_to_counter():
         return(output)
 
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/pushback_from_date')
 def pushback_from_date():
     try:
@@ -378,6 +394,7 @@ def pushback_from_date():
         return(output)
 
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/pushback_to_date')
 def pushback_to_date():
     try:
@@ -420,6 +437,7 @@ def pushback_to_date():
         return(output)
 
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/chainpushback')
 def chainpushback():
     try:
@@ -463,6 +481,7 @@ def chainpushback():
         return(output)
 
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/violence')
 def violence():
     try:
@@ -508,6 +527,7 @@ def violence():
         return(output)
 
 @cached(cache)
+@cache.cached(timeout=3600)
 @app.route('/countries_of_origin')
 def countries_of_origin():
     try:
