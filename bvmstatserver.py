@@ -472,7 +472,7 @@ def violence():
         conn = sqlite3.connect(filename,timeout=30.0)
         tempdb = db["violence"]
         df = pd.read_sql_query("SELECT report_link, types_of_violence_used FROM reports",conn) 
-        length = float(len(df)*100.00)
+        length = float(len(df)*0.01)
         x= 0
         tempdb.delete()
         db.begin()
