@@ -2,6 +2,7 @@
 # (c) by Alex (t.me/gobi_todic)
 from flask import Flask
 from flask import make_response
+from flask_cors import CORS
 from update_reports import update
 import pandas as pd
 import sqlite3
@@ -21,6 +22,7 @@ logging.basicConfig(level=logging.INFO)
 # $flask run
 
 app = Flask(__name__)
+CORS(app)
 app.config['debug'] = False
 
 @cached(cache)
@@ -470,6 +472,7 @@ def violence():
         conn = sqlite3.connect(filename,timeout=30.0)
         tempdb = db["violence"]
         df = pd.read_sql_query("SELECT report_link, types_of_violence_used FROM reports",conn) 
+        length = float(len(df)*1.00)
         x= 0
         tempdb.delete()
         db.begin()
@@ -489,7 +492,7 @@ def violence():
         db.commit()
         conn.close()
         conn = sqlite3.connect(filename,timeout=30.0)
-        df2 = pd.read_sql_query("SELECT types_of_violence_used, count(report_link) FROM violence GROUP BY types_of_violence_used ORDER BY count(report_link) DESC", conn)
+        df2 = pd.read_sql_query("SELECT types_of_violence_used, (CAST (count(report_link) AS DECIMAL(5,1))/%f) FROM violence GROUP BY types_of_violence_used ORDER BY count(report_link) DESC"%length, conn)
         csv_data = df2.to_csv()
         output = make_response(csv_data)
         output.headers["Content-Disposition"] = "attachment; filename=violence.csv"
@@ -553,6 +556,6 @@ def countries_of_origin():
 
 
 
-    
-if __name__ == '__main__':
-    hello_world()
+
+if __name__ == '__main__': #für Debug-Mode
+    app.run(debug=True)
